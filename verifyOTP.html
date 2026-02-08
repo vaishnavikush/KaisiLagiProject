@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify OTP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap & SweetAlert -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+        background: linear-gradient(15deg,black, #3f0158, #6c0235, black);
+      font-family: Poppins, system-ui, Arial;
+    }
+
+    .otp-wrapper {
+      width: 430px;
+      padding: 36px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.223);
+      box-shadow: 0 30px 70px rgba(25, 32, 1, 0.3);
+      animation: fadeUp 0.8s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .otp-title {
+      font-size: 26px;
+      font-weight: 700;
+      text-align: center;
+      color: #bac4d2;
+    }
+
+    .otp-desc {
+      text-align: center;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .otp-input {
+      width: 54px;
+      height: 58px;
+      margin: 6px;
+      font-size: 24px;
+      text-align: center;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      transition: all 0.25s ease;
+    }
+
+    .otp-input:focus {
+      outline: none;
+      border-color: #f60f92;
+      box-shadow: 0 0 12px rgba(248, 254, 88, 0.785);
+      transform: scale(1.08);
+    }
+
+    .verify-btn {
+      margin-top: 22px;
+      background: linear-gradient(135deg, #b5baf5, #ff4bab);
+      color: #000000;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .verify-btn:hover {
+      transform: scale(1.03);
+      background: linear-gradient(135deg, #fc9f34, #fff94b);
+    }
+
+    .timer {
+      text-align: center;
+      font-weight: 600;
+      color: #fefeff;
+      margin-top: 12px;
+    }
+
+    /* Shake animation on error */
+    .shake {
+      animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-6px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="otp-wrapper" id="otpBox">
+  <h1 style="font-family: Monoton; text-align: center;
+    letter-spacing: 8px; word-spacing: 10px;
+    color: #fffc9e;">KAISI LAGI</h1>
+  <h3 class="otp-title">Verify Your OTP</h3>
+  <p class="otp-desc">Enter the 6-digit code sent to your email</p>
+
+  <form th:action="@{/verify-otp}" method="post" id="otpForm">
+
+    <div class="d-flex justify-content-center mt-3" id="otpInputs">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+    </div>
+
+    <input type="hidden" name="otp" id="otpFull">
+
+    <div class="timer">
+      OTP expires in <span id="time">02:00</span>
+    </div>
+
+    <button type="submit" class="btn verify-btn w-100">
+      Verify OTP
+    </button>
+  </form>
+</div>
+
+<!-- SweetAlert + auto-clear on backend error -->
+<div th:if="${error}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid OTP',
+      text: [[${error}]],
+      confirmButtonColor: '#2563eb'
+    }).then(() => {
+      const inputs = document.querySelectorAll('.otp-input');
+      inputs.forEach(i => i.value = '');
+      inputs[0].focus();
+
+      const box = document.getElementById('otpBox');
+      box.classList.add('shake');
+      setTimeout(() => box.classList.remove('shake'), 400);
+    });
+  </script>
+</div>
+
+<script>
+  const inputs = document.querySelectorAll('.otp-input');
+
+  inputs.forEach((input, idx) => {
+
+    input.addEventListener('input', e => {
+      input.value = input.value.replace(/[^0-9]/g, '');
+      if (input.value && idx < inputs.length - 1) {
+        inputs[idx + 1].focus();
+      }
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !input.value && idx > 0) {
+        inputs[idx - 1].focus();
+      }
+    });
+  });
+
+  // Paste full OTP support
+  inputs[0].addEventListener('paste', e => {
+    e.preventDefault();
+    const paste = e.clipboardData.getData('text').replace(/\D/g, '');
+    paste.split('').slice(0, 6).forEach((d, i) => inputs[i].value = d);
+    inputs[Math.min(paste.length, 6) - 1]?.focus();
+  });
+
+  document.getElementById('otpForm').addEventListener('submit', e => {
+    let otp = '';
+    inputs.forEach(i => otp += i.value);
+    if (otp.length !== 6) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Incomplete OTP',
+        text: 'Please enter all 6 digits.'
+      });
+      return;
+    }
+    document.getElementById('otpFull').value = otp;
+  });
+
+  // Countdown
+  let sec = 120;
+  setInterval(() => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    document.getElementById('time').innerText =
+      (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    if (sec > 0) sec--;
+  }, 1000);
+</script>
+
+</body>
+</html>

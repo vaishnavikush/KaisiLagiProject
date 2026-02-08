@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Crew - Movie Management System</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&family=Monoton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Cropper.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --cinema-orange: #f57420;
+            --cinema-red: #cc3333;
+            --cinema-gold: #f4c22d;
+            --cinema-olive: #c3b357;
+            --white: #ffffff;
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            --card-shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.2);
+            --glow-orange: 0 0 30px rgba(245, 116, 32, 0.4);
+            --glow-gold: 0 0 20px rgba(244, 194, 45, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-image: url("/images/bb.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            padding: 80px 0 40px;
+            color: #f0f4f8;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            color: var(--white);
+            margin-bottom: 35px;
+        }
+
+        .page-header .header-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .page-header .header-icon i {
+            font-size: 28px;
+        }
+
+        .page-header h1 {
+            font-family: Monoton;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 500;
+            word-spacing: 8px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-header p {
+            font-family: cookie;
+            font-size: 2.1rem;
+            opacity: 0.9;
+        }
+
+        /* Form Container */
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 40px 50px;
+            border: 2px solid #f98383;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+            backdrop-filter: blur(10px);
+            padding: clamp(25px, 5vw, 45px);
+            transition: all 0.3s ease;
+        }
+
+        .form-container:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-3px);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+
+        .form-header .divider {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--cinema-gold) 0%, var(--cinema-olive) 100%);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Form Labels */
+        .form-label {
+            font-weight: 500;
+            color: #ffffff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: rgb(0, 166, 255);
+            font-size: 1rem;
+        }
+
+        .form-label .required {
+            color: var(--cinema-red);
+            font-weight: 600;
+        }
+
+        /* Form Controls */
+        .form-control,
+        .form-select {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--cinema-orange);
+            box-shadow: 0 0 0 4px rgba(245, 116, 32, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Fix for select dropdown options */
+        .form-select option {
+            background: rgba(30, 30, 46, 0.98);
+            color: #ffffff;
+            padding: 10px;
+        }
+
+        .form-select option:hover,
+        .form-select option:checked {
+            background: rgba(245, 116, 32, 0.3);
+            color: #ffffff;
+        }
+
+        /* Section Divider */
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cinema-gold), transparent);
+            margin: 30px 0;
+            opacity: 0.5;
+        }
+
+        /* Awards Dropdown Styling */
+        .awards-dropdown-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: #94a3b8;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .dropdown-btn::after {
+            content: '\f282';
+            font-family: 'bootstrap-icons';
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-btn.active::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-btn:hover {
+            border-color: var(--cinema-orange);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dropdown-btn.has-selection {
+            color: #ffffff;
+            border-color: var(--cinema-gold);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(30, 30, 46, 0.98);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            margin-top: 8px;
+            padding: 10px;
+            z-index: 1000;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-content label {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+            margin-bottom: 5px;
+        }
+
+        .dropdown-content label:hover {
+            background: rgba(245, 116, 32, 0.2);
+        }
+
+        .dropdown-content input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--cinema-gold);
+        }
+
+        .dropdown-content input[type="text"] {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .dropdown-content input[type="text"]:focus {
+            outline: none;
+            border-color: var(--cinema-orange);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dropdown-content input[type="text"]::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Selected awards display */
+        .selected-awards-display {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .award-tag {
+            background: linear-gradient(135deg, var(--cinema-gold), var(--cinema-olive));
+            color: #1e1e2e;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .award-tag .remove-award {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .award-tag .remove-award:hover {
+            opacity: 1;
+        }
+
+        /* Image Upload Area */
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        }
+
+        .upload-area:hover {
+            border-color: var(--cinema-orange);
+            background: linear-gradient(135deg, rgba(245, 116, 32, 0.1) 0%, rgba(245, 116, 32, 0.05) 100%);
+        }
+
+        .upload-area .upload-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, purple 0%, var(--cinema-red) 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            box-shadow: var(--glow-orange);
+        }
+
+        .upload-area .upload-icon i {
+            font-size: 28px;
+            color: var(--white);
+        }
+
+        .upload-area p {
+            color: #cbd5e1;
+            margin-bottom: 5px;
+        }
+
+        .upload-area .upload-hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        /* Image Preview */
+        .image-preview {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .image-preview img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--cinema-gold);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .image-preview img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(244, 194, 45, 0.5);
+        }
+
+        /* New Image Badge */
+        .new-image-badge {
+            position: absolute;
+            top: -10px;
+            right: calc(50% - 85px);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.6);
+            }
+        }
+
+        /* Buttons */
+        .btn-cinema-primary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border: none;
+            color: var(--white);
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: var(--glow-orange);
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-cinema-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 116, 32, 0.5);
+            color: var(--white);
+        }
+
+        .btn-cinema-secondary {
+            background: transparent;
+            border: 2px solid #fcd810;
+            color: #fcd810;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cinema-secondary:hover {
+            background-color: rgb(247, 137, 3);
+            color: var(--white);
+        }
+
+        /* Error Messages */
+        .text-danger {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            color: #ff6b6b;
+        }
+
+        /* Footer */
+        .page-footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Container background fix */
+        .container-fluid {
+            background-color: transparent !important;
+        }
+
+        /* SIDEBAR DESKTOP */
+        :root {
+            --sidebar-width: 250px;
+            --primary-bg: #1d000a;
+            --sidebar-bg: rgba(199, 188, 191, 0.21);
+            --sidebar-border: #eb2d5d;
+        }
+
+        .layout {
+            display: flex;
+            gap: 18px;
+        }
+
+        .sidebar {
+            color: #ffffff;
+            width: 250px;
+            margin-top: 10px;
+            background: linear-gradient(145deg, rgba(102, 145, 160, 0.4), rgba(125, 1, 34, 0.522));
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--sidebar-border);
+            padding: 20px;
+            height: calc(100vh - 100px);
+            border-radius: 12px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+            position: sticky;
+            top: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar nav a i {
+            margin-right: 8px;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(250, 234, 238, 0.3);
+            color: #fff;
+            text-shadow: 0 0 8px #ff0080;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 18px;
+            background-color: transparent;
+        }
+
+        .sidebar .rounded-circle {
+            border: 2px solid var(--accent);
+            padding: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(245, 103, 138, 0.6);
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .rounded-circle:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(235, 45, 93, 1);
+        }
+
+        .sidebar h6 {
+            color: #ffffff !important;
+            text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8); }
+            50% { text-shadow: 0 2px 25px rgba(235, 45, 93, 1); }
+        }
+
+        .text-light {
+            color: #ffffff !important;
+        }
+
+        /* Mobile Sidebar */
+        @media (max-width: 991px) {
+            .sidebar {
+                position: fixed;
+                top: 120px;
+                left: 0;
+                width: 200px;
+                height: calc(100vh - 140px);
+                background: linear-gradient(145deg, #7917307b, rgba(106, 11, 36, 0.314));
+                backdrop-filter: blur(10px);
+                z-index: 9999;
+                transform: translateX(-200px);
+                transition: transform 0.35s ease;
+                border-radius: 0 14px 14px 0;
+                box-shadow: 6px 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .sidebar::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                right: -10px;
+                width: 10px;
+                height: 100%;
+                background: linear-gradient(145deg, #79172f, rgba(106, 11, 36, 0.95));
+                border-radius: 0 10px 10px 0;
+                cursor: pointer;
+            }
+
+            .sidebar:hover,
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .layout {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .sidebar {
+                top: 90px;
+            }
+
+            .form-container {
+                padding: 30px 25px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .page-header p {
+                font-size: 1.5rem;
+            }
+
+            .new-image-badge {
+                right: calc(50% - 70px);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-container {
+                width: 100%;
+                max-width: none;
+                padding: 20px 15px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .upload-area {
+                padding: 30px 15px;
+            }
+
+            .image-preview img {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        .back-btn-6 {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid #00d9ff;
+            color: #00d9ff;
+            padding: 0.9rem 2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3), inset 0 0 10px rgba(0, 217, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
+
+        .back-btn-6:hover {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00ffff;
+            color: #00ffff;
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(0, 217, 255, 0.6), inset 0 0 20px rgba(0, 217, 255, 0.2);
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
+        }
+
+        .back-btn-6 i {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 0 5px rgba(0, 217, 255, 0.5));
+        }
+
+        .back-btn-6:hover i {
+            transform: translateX(-5px);
+        }
+
+        /* Custom SweetAlert2 Styling */
+        .swal2-popup {
+            background: rgba(30, 30, 46, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--cinema-gold);
+            border-radius: 16px;
+        }
+
+        .swal2-title {
+            color: #ffffff !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
+
+        .swal2-html-container {
+            color: #cbd5e1 !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 12px 28px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 0 30px rgba(245, 116, 32, 0.4) !important;
+        }
+
+        .swal2-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 116, 32, 0.5) !important;
+        }
+    </style>
+</head>
+
+<body>
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: nav(activePage='dashboard')}"></div>
+
+<div class="container-fluid">
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar mb-3">
+            <div class="text-center mb-4" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <a th:href="@{/profile}">
+                    <img th:src="${photo != null} ? 'data:image/jpeg;base64,' + ${photo} : @{/images/default.png}"
+                         alt="Profile Picture" width="50" height="50" class="rounded-circle" />
+                </a>
+                <h6 style="font-family: 'Poppins', sans-serif; color: #ffffff; margin-top: 0;" th:text="${username}">Admin</h6>
+            </div>
+            <nav>
+                <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a th:href="@{/moviedelete}" th:classappend="${activePage == 'moviedelete'} ? 'active' : ''">
+                    <i class="bi bi-camera-reels-fill"></i> All Movies
+                </a>
+                <a class="active" th:href="@{/showpeople}" th:classappend="${activePage == 'showpeople'} ? 'active' : ''">
+                    <i class="bi bi-people-fill"></i> All Crew
+                </a>
+                <a th:href="@{/users}" th:classappend="${activePage == 'makeAdmin'} ? 'active' : ''">
+                    <i class="bi bi-person-workspace"></i> Create Admin
+                </a>
+                <a th:href="@{/block-users}" th:classappend="${activePage == 'blockUser'} ? 'active' : ''">
+                    <i class="bi bi-person-fill-gear"></i> All Users
+                </a>
+                <a th:href="@{/ShowReports}" th:classappend="${activePage == 'ShowReports'} ? 'active' : ''">
+                    <i class="bi bi-bar-chart-fill"></i> All Reports
+                </a>
+                <a th:href="@{/list}" th:classappend="${activePage == 'badgelist'} ? 'active' : ''">
+                    <i class="bi bi-award-fill"></i>Badges
+                </a>
+                <a th:href="@{/logout}">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- Header -->
+            <header class="page-header">
+                <h1>Crew Management System</h1>
+                <p>Update crew member information</p>
+            </header>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Edit Crew Member</h2>
+                    <p>Update the details below to modify the crew member information</p>
+                    <div class="divider"></div>
+                </div>
+
+                <form id="editPersonForm" method="post" action="/updatepeople" th:object="${updatepeoplemaster}" enctype="multipart/form-data">
+
+                    <!-- Hidden ID Field -->
+                    <input type="hidden" th:field="*{pid}"/>
+
+                    <!-- Crew Name & Role Row -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="peopleName" class="form-label">
+                                <i class="bi bi-person"></i> Crew Name <span class="required">*</span>
+                            </label>
+                            <input type="text" th:field="*{peopleName}" id="peopleName" class="form-control"
+                                   placeholder="Enter full name" required>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="role" class="form-label">
+                                <i class="bi bi-briefcase"></i> Crew Role <span class="required">*</span>
+                            </label>
+                            <select th:field="*{role}" id="role" class="form-select" required>
+                                <option value="">-- Select Role --</option>
+                                <option value="Actor">Actor</option>
+                                <option value="Actress">Actress</option>
+                                <option value="Director">Director</option>
+                                <option value="Producer">Producer</option>
+                                <option value="Editor">Editor</option>
+                                <option value="Music Director">Music Director</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Awards Dropdown Section -->
+                    <div class="awards-dropdown-container">
+                        <label class="form-label">
+                            <i class="bi bi-trophy"></i> Awards
+                        </label>
+                        <div class="dropdown">
+                            <div class="dropdown-btn" id="dropdownBtn">-- Select Awards --</div>
+                            <div class="dropdown-content" id="dropdownContent">
+                                <label><input type="checkbox" value="National Film Awards"> National Film Awards</label>
+                                <label><input type="checkbox" value="Filmfare Awards"> Filmfare Awards</label>
+                                <label><input type="checkbox" value="IIFA Awards"> IIFA Awards</label>
+                                <label><input type="checkbox" value="Screen Awards"> Screen Awards</label>
+                                <label><input type="checkbox" value="Zee Cine Awards"> Zee Cine Awards</label>
+                                <label><input type="checkbox" value="Dadasaheb Phalke Award"> Dadasaheb Phalke Award</label>
+                                <label><input type="checkbox" value="Filmfare Critics Awards"> Filmfare Critics Awards</label>
+                                <label><input type="checkbox" value="SIIMA Awards"> SIIMA Awards</label>
+                                <label><input type="checkbox" value="Filmfare Awards South"> Filmfare Awards South</label>
+                                <label><input type="checkbox" value="State Film Awards"> State Film Awards</label>
+                                <label style="flex-direction: column; align-items: stretch; gap: 5px;">
+                                    <span style="font-size: 0.9rem; color: #94a3b8;">Other Award:</span>
+                                    <input type="text" id="otherAward" placeholder="Enter custom award name">
+                                </label>
+                            </div>
+                        </div>
+                        <input type="hidden" th:field="*{people_awards}" id="selected_awards">
+                        <div class="selected-awards-display" id="selectedAwardsDisplay"></div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="mb-4">
+                        <label for="people_bio" class="form-label">
+                            <i class="bi bi-file-text"></i> Crew Bio <span class="required">*</span>
+                        </label>
+                        <input type="text" th:field="*{people_bio}" id="people_bio" class="form-control"
+                               placeholder="Enter crew member's biography..." required>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Date of Birth, Debut Name & Year Row -->
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label for="people_dob" class="form-label">
+                                <i class="bi bi-calendar-event"></i> Date of Birth <span class="required">*</span>
+                            </label>
+                            <input type="date" th:field="*{people_dob}" id="people_dob" class="form-control"
+                                   placeholder="YYYY-MM-DD" required>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <label for="people_debut" class="form-label">
+                                <i class="bi bi-star"></i> Debut Name <span class="required">*</span>
+                            </label>
+                            <input type="text" th:field="*{people_debut}" id="people_debut" class="form-control"
+                                   placeholder="First movie/project" required>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <label for="debut_date" class="form-label">
+                                <i class="bi bi-calendar-check"></i> Debut Year <span class="required">*</span>
+                            </label>
+                            <input type="text" th:field="*{debut_date}" id="debut_date" class="form-control"
+                                   placeholder="e.g., 2010" required>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Upload Image -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-image"></i> Change Crew Image
+                        </label>
+                        <div class="upload-area" onclick="document.getElementById('image').click()">
+                            <input type="file" name="img" id="image" class="d-none" accept="image/*"
+                                   onchange="previewImage(event)">
+                            <div class="upload-icon">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                            </div>
+                            <p class="mb-1">Click to upload or drag and drop</p>
+                            <span class="upload-hint">PNG, JPG, GIF up to 10MB</span>
+                        </div>
+                        <div class="image-preview">
+                            <img id="personImage" th:src="@{/getimage/{pid}(pid=${pid})}" alt="Person Image">
+                            <span id="newImageBadge" class="new-image-badge" style="display: none;">NEW</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-cinema-primary">
+                            <i class="bi bi-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <footer class="page-footer">
+                <p>© 2025 Movie Management System. All rights reserved.</p>
+            </footer>
+
+        </main>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.all.min.js"></script>
+
+<script>
+    // Awards Dropdown Functionality
+    const dropdownBtn = document.getElementById('dropdownBtn');
+    const dropdownContent = document.getElementById('dropdownContent');
+    const selectedAwardsInput = document.getElementById('selected_awards');
+    const selectedAwardsDisplay = document.getElementById('selectedAwardsDisplay');
+    const checkboxes = dropdownContent.querySelectorAll('input[type="checkbox"]');
+    const otherAwardInput = document.getElementById('otherAward');
+
+    let selectedAwards = [];
+
+    // Initialize with existing awards if editing
+    function initializeAwards() {
+        const existingAwards = selectedAwardsInput.value;
+        if (existingAwards && existingAwards.trim() !== '') {
+            selectedAwards = existingAwards.split(',').map(award => award.trim()).filter(award => award !== '');
+
+            // Check the appropriate checkboxes
+            checkboxes.forEach(checkbox => {
+                if (selectedAwards.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+
+            // Handle custom awards
+            selectedAwards.forEach(award => {
+                const isStandardAward = Array.from(checkboxes).some(cb => cb.value === award);
+                if (!isStandardAward && award !== '') {
+                    // This is a custom award
+                    const customAwards = selectedAwards.filter(a => {
+                        return !Array.from(checkboxes).some(cb => cb.value === a);
+                    });
+                    if (customAwards.length > 0) {
+                        otherAwardInput.value = customAwards.join(', ');
+                    }
+                }
+            });
+
+            updateDisplay();
+        }
+    }
+
+    // Toggle dropdown
+    dropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdownContent.classList.toggle('show');
+        dropdownBtn.classList.toggle('active');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!dropdownContent.contains(e.target) && e.target !== dropdownBtn) {
+            dropdownContent.classList.remove('show');
+            dropdownBtn.classList.remove('active');
+        }
+    });
+
+    // Prevent dropdown from closing when clicking inside
+    dropdownContent.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Handle checkbox changes
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSelectedAwards();
+        });
+    });
+
+    // Handle custom award input
+    otherAwardInput.addEventListener('input', function() {
+        updateSelectedAwards();
+    });
+
+    otherAwardInput.addEventListener('blur', function() {
+        updateSelectedAwards();
+    });
+
+    function updateSelectedAwards() {
+        selectedAwards = [];
+
+        // Get checked awards
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                selectedAwards.push(checkbox.value);
+            }
+        });
+
+        // Add custom award if provided
+        const customAward = otherAwardInput.value.trim();
+        if (customAward) {
+            // Split by comma in case multiple custom awards
+            const customAwards = customAward.split(',').map(a => a.trim()).filter(a => a !== '');
+            selectedAwards.push(...customAwards);
+        }
+
+        updateDisplay();
+        updateHiddenInput();
+    }
+
+    function updateDisplay() {
+        selectedAwardsDisplay.innerHTML = '';
+
+        if (selectedAwards.length > 0) {
+            dropdownBtn.textContent = `${selectedAwards.length} Award(s) Selected`;
+            dropdownBtn.classList.add('has-selection');
+
+            selectedAwards.forEach((award, index) => {
+                const tag = document.createElement('span');
+                tag.className = 'award-tag';
+                tag.innerHTML = `
+                    ${award}
+                    <span class="remove-award" data-index="${index}">×</span>
+                `;
+                selectedAwardsDisplay.appendChild(tag);
+            });
+
+            // Add remove functionality
+            document.querySelectorAll('.remove-award').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    const awardToRemove = selectedAwards[index];
+
+                    // Uncheck if it's a standard award
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox.value === awardToRemove) {
+                            checkbox.checked = false;
+                        }
+                    });
+
+                    // Remove from custom input if it's there
+                    if (otherAwardInput.value.includes(awardToRemove)) {
+                        const customAwards = otherAwardInput.value.split(',')
+                            .map(a => a.trim())
+                            .filter(a => a !== awardToRemove);
+                        otherAwardInput.value = customAwards.join(', ');
+                    }
+
+                    updateSelectedAwards();
+                });
+            });
+        } else {
+            dropdownBtn.textContent = '-- Select Awards --';
+            dropdownBtn.classList.remove('has-selection');
+        }
+    }
+
+    function updateHiddenInput() {
+        selectedAwardsInput.value = selectedAwards.join(', ');
+    }
+
+    // Image preview function
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('personImage');
+                const badge = document.getElementById('newImageBadge');
+
+                img.src = e.target.result;
+                badge.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Form submission with SweetAlert
+    document.getElementById('editPersonForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Update awards one more time before submission
+        updateSelectedAwards();
+
+        const formData = new FormData(this);
+
+        // Show loading alert
+        Swal.fire({
+            title: 'Updating Crew Member...',
+            html: 'Please wait while we update the information',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Submit form via fetch
+        fetch('/updatepeople', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                // Success alert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated Successfully!',
+                    html: '<strong>Crew member information has been updated!</strong><br><small>Redirecting to crew list...</small>',
+                    showConfirmButton: true,
+                    confirmButtonText: 'View All Crew',
+                    timer: 3000,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.location.href = '/showpeople';
+                });
+            } else {
+                // Error alert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed!',
+                    text: 'Failed to update crew member information. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            // Network error alert
+            Swal.fire({
+                icon: 'error',
+                title: 'Network Error!',
+                text: 'Unable to connect to the server. Please check your connection.',
+                confirmButtonText: 'OK'
+            });
+            console.error('Error:', error);
+        });
+    });
+
+    // Mobile Sidebar Functionality
+    const sidebar = document.getElementById('sidebar');
+
+    function isMobile() {
+        return window.innerWidth < 992;
+    }
+
+    // Close when touching outside
+    document.addEventListener('touchstart', function (e) {
+        if (!isMobile()) return;
+        if (!sidebar.contains(e.target)) {
+            sidebar.classList.remove('open');
+        }
+    });
+
+    // Reset when back to desktop
+    window.addEventListener('resize', function () {
+        if (!isMobile()) {
+            sidebar.classList.remove('open');
+        }
+    });
+
+    // Initialize awards on page load
+    window.addEventListener('DOMContentLoaded', function() {
+        initializeAwards();
+    });
+</script>
+
+</body>
+</html>
