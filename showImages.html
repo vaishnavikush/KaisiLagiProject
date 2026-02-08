@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Show Images</title>
+</head>
+<body>
+<h2>Movie Images</h2>
+<div th:if="${allImages.isEmpty()}">No images uploaded!</div>
+<div th:each="img : ${allImages}">
+    <img th:src="@{'/images/' + ${img.imageId}}" width="200"/>
+</div>
+</body>
+</html>

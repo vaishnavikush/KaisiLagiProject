@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People Directory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cookie&family=Monoton&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-image: url('/images/bb.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 40px 30px;
+    }
+
+    h1 {
+      font-family: 'Monoton', cursive;
+      text-align: center;
+      font-size: 3em;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 2.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      text-shadow: 0 4px 20px rgba(225, 225, 225, 0.5);
+    }
+
+    p {
+      text-align: center;
+      font-size: 2em;
+      color: #ffffff;
+      letter-spacing: 1.5px;
+      font-family:Cookie;
+      margin-bottom: 35px;
+      font-weight: 500;
+    }
+
+    /* ===== SEARCH AREA ===== */
+    .top-forms {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 2px solid rgba(245, 158, 11, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      margin-bottom: 40px;
+      transition: all 0.3s ease;
+    }
+
+    .top-forms:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .top-forms form {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .top-forms input,
+    .top-forms select {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      font-size: 1.05em;
+      width: 180px;
+      transition: 0.3s;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .top-forms input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .top-forms select option {
+      background: #2d2d2d;
+      color: #ffffff;
+    }
+
+    .top-forms input:focus,
+    .top-forms select:focus {
+      border-color: #ff6b6b;
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+      outline: none;
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .top-forms button {
+      padding: 12px 26px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      transition: 0.3s;
+      font-size: 1em;
+    }
+
+    .top-forms form:first-child button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .top-forms form:nth-child(2) button {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: white;
+    }
+
+    .top-forms button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ===== TABLE ===== */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(245, 158, 11, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .table-wrapper:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 16px;
+      min-width: 650px;
+    }
+
+    thead {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.9) 0%, rgba(197, 72, 197, 0.9) 50%, rgba(74, 55, 150, 0.9) 100%);
+    }
+
+    thead th {
+      padding: 20px 16px;
+      font-size: 1em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffffff;
+      vertical-align: middle;
+    }
+
+    tbody td {
+      padding: 18px 16px;
+      font-size: 1.1em;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ===== IMAGE ===== */
+    .profile-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(245, 158, 11, 0.6);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+      transition: 0.3s;
+    }
+
+    .profile-img:hover {
+      transform: scale(1.12) rotate(2deg);
+      border-color: #ff6b6b;
+    }
+
+    /* ===== ACTION BUTTONS ===== */
+    .action-area {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .update-btn,
+    .delete-btn {
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.95em;
+      font-weight: 600;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .update-btn {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: white;
+    }
+
+    .delete-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+      color: white;
+    }
+
+    .update-btn:hover,
+    .delete-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Overlay for mobile */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 998;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    /* SIDEBAR DESKTOP */
+    :root {
+      --sidebar-width: 250px;
+      --primary-bg: #1d000a;
+      --sidebar-bg: rgba(199, 188, 191, 0.21);
+      --sidebar-border: #eb2d5d;
+    }
+
+    .layout {
+      display: flex;
+      gap: 18px;
+    }
+
+    .sidebar {
+      color: #ffffff;
+      width: 250px;
+      margin-top: 10px;
+      background: linear-gradient(145deg, rgba(102, 145, 160, 0.4), rgba(125, 1, 34, 0.522));
+      backdrop-filter: blur(10px);
+      border-left: 4px solid var(--sidebar-border);
+      padding: 20px;
+      height: calc(100vh - 100px);
+      border-radius: 12px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+      position: sticky;
+      top: 100px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar nav a {
+      display: block;
+      padding: 12px 15px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar nav a i {
+      margin-right: 8px;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: rgba(250, 234, 238, 0.3);
+      color: #fff;
+      text-shadow: 0 0 8px #ff0080;
+      transform: translateX(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 18px;
+      background-color: transparent;
+    }
+.sidebar .rounded-circle {
+            border: 2px solid var(--accent);
+            padding: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(245, 103, 138, 0.6);
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .rounded-circle:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(235, 45, 93, 1);
+        }
+
+        .sidebar h6 {
+            color: #ffffff !important;
+            text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8); }
+            50% { text-shadow: 0 2px 25px rgba(235, 45, 93, 1); }
+        }
+
+    .text-light {
+      color: #ffffff !important;
+    }
+
+    .sidebar-toggle-btn {
+      position: fixed;
+      top: 100px;
+      left: 10px;
+      z-index: 1000;
+      background: rgba(235, 45, 93, 0.8);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      display: none;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background: rgba(235, 45, 93, 1);
+    }
+
+   
+      /* Mobile Sidebar */
+        @media (max-width: 991px) {
+            .sidebar {
+                position: fixed;
+                top: 120px;
+                left: 0;
+                width: 200px;
+                height: calc(100vh - 140px);
+                background: linear-gradient(145deg, #7917307b, rgba(106, 11, 36, 0.314));
+                backdrop-filter: blur(10px);
+                z-index: 9999;
+                transform: translateX(-200px);
+                transition: transform 0.35s ease;
+                border-radius: 0 14px 14px 0;
+                box-shadow: 6px 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            /* Thin visible strip */
+            .sidebar::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                right: -10px;
+                width: 10px;
+                height: 100%;
+                background: linear-gradient(145deg, #79172f, rgba(106, 11, 36, 0.95));
+                border-radius: 0 10px 10px 0;
+                cursor: pointer;
+            }
+
+      /* Open on hover/touch */
+      .sidebar:hover,
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-strip {
+        position: absolute;
+        top: 0;
+        right: -10px;
+        width: 10px;
+        height: 100%;
+        background: linear-gradient(145deg, #79172f, rgba(106, 11, 36, 0.95));
+        border-radius: 0 10px 10px 0;
+        cursor: pointer;
+      }
+
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .main-content {
+        padding: 10px;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding-top: 70px;
+      }
+
+      .sidebar {
+        top: 90px;
+      }
+          .container {
+        padding: 30px 15px;
+      }
+
+      h1 {
+        font-size: 2.2em;
+      }
+
+      .container > p {
+        font-size: 1em;
+      }
+
+      .top-forms {
+        padding: 20px;
+      }
+
+      .top-forms input,
+      .top-forms select {
+        width: 100%;
+      }
+
+      .top-forms button {
+        width: 100%;
+      }
+
+      .top-forms form {
+        width: 100%;
+      }
+
+      thead th {
+        padding: 15px 12px;
+        font-size: 0.9em;
+      }
+
+      tbody td {
+        padding: 15px 12px;
+        font-size: 1em;
+      }
+
+      .profile-img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 15px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+        letter-spacing: 1.5px;
+      }
+
+      .container > p {
+        font-size: 0.9em;
+      }
+
+      .top-forms {
+        padding: 15px;
+      }
+
+      thead th {
+        padding: 12px 8px;
+        font-size: 0.85em;
+      }
+
+      tbody td {
+        padding: 12px 8px;
+        font-size: 0.95em;
+      }
+
+      .profile-img {
+        width: 50px;
+        height: 50px;
+      }
+
+      .update-btn,
+      .delete-btn {
+        padding: 8px 12px;
+        font-size: 0.85em;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        padding: 20px 10px;
+      }
+
+      h1 {
+        font-size: 1.5em;
+      }
+
+      .container > p {
+        font-size: 0.8em;
+      }
+
+      .top-forms {
+        padding: 10px;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .top-forms input,
+      .top-forms select {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 0.85em;
+      }
+
+      .top-forms button {
+        width: 100%;
+        padding: 8px 16px;
+        font-size: 0.85em;
+      }
+
+      .table-wrapper {
+        border-radius: 6px;
+      }
+
+      table {
+        min-width: 400px;
+      }
+
+      thead th {
+        padding: 8px 4px;
+        font-size: 0.7em;
+      }
+
+      tbody td {
+        padding: 8px 4px;
+        font-size: 0.8em;
+      }
+
+      .profile-img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .update-btn,
+      .delete-btn {
+        padding: 5px 8px;
+        font-size: 0.7em;
+      }
+
+      .action-area {
+        gap: 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: nav(activePage='dashboard')}"></div>
+
+<div class="container-fluid">
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar mb-3">
+      <div class="text-center mb-4" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+      <a th:href="@{/profile}">
+        <img th:src="${photo != null} ? 'data:image/jpeg;base64,' + ${photo} : @{/images/default.png}"
+             alt="Profile Picture" width="50" height="50" class="rounded-circle" />
+      </a>
+      <h6 style="font-family: 'Poppins', sans-serif; color: #ffffff; margin-top: 0;" th:text="${username}">Admin</h6>
+      <!-- <h5 style="font-family: 'Cookie', cursive; color: #ffffff; margin-top: 5px;">Kaisi Lagi</h5> -->
+    </div>
+
+      <nav>
+        <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a th:href="@{/moviedelete}" th:classappend="${activePage == 'moviedelete'} ? 'active' : ''">
+          <i class="bi bi-camera-reels-fill"></i> All Movies
+        </a>
+        <a class="active" th:href="@{/showpeople}" th:classappend="${activePage == 'showpeople'} ? 'active' : ''">
+          <i class="bi bi-people-fill"></i> All Crew
+        </a>
+        <a th:href="@{/users}" th:classappend="${activePage == 'makeAdmin'} ? 'active' : ''">
+          <i class="bi bi-person-workspace"></i> Create Admin
+        </a>
+        <a th:href="@{/block-users}" th:classappend="${activePage == 'blockUser'} ? 'active' : ''">
+          <i class="bi bi-person-fill-gear"></i> All Users
+        </a>
+        <a th:href="@{/ShowReports}" th:classappend="${activePage == 'ShowReports'} ? 'active' : ''">
+          <i class="bi bi-bar-chart-fill"></i> All Reports
+        </a>
+        <a th:href="@{/list}" th:classappend="${activePage == 'badgelist'} ? 'active' : ''">
+          <i class="bi bi-award-fill"></i>Badges
+        </a>
+        <a th:href="@{/logout}">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <h1 class="top-head text-light">People Directory</h1>
+      <p>Manage the talent that brings every story to life</p>
+
+      <!-- Search Forms -->
+      <div class="top-forms">
+        <form th:action="@{/serachbyname}" method="get">
+          <input type="text" name="peopleName" placeholder="Search by name">
+          <button type="submit">Search</button>
+        </form>
+
+        <form th:action="@{/searchbyrole}" method="post">
+          <select name="role" required>
+            <option value="">-- Select Role --</option>
+            <option value="Actor">Actor</option>
+            <option value="Actress">Actress</option>
+            <option value="Director">Director</option>
+            <option value="Producer">Producer</option>
+            <option value="Editor">Editor</option>
+            <option value="Music Director">Music Director</option>
+          </select>
+          <button type="submit">Filter</button>
+         <div style="margin-left: 10px;background-color: #f85c83;color: white;padding: 10px;
+         border-radius: 10px;box-shadow: 0 4px 15px rgba(255, 0, 128, 0.4);font-weight: 600;
+         text-transform: uppercase; transition: background-color 0.3s ease;
+         cursor: pointer;text-decoration: none;">
+                        <a th:href="@{/setpeople}" class="btn-add-movie table-light" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: white;">
+                            <i class="bi bi-plus-circle text-light"></i>
+                            <span>Add Crew</span>
+                        </a>
+                    </div>
+        </form>
+      </div>
+
+      <!-- People Table -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr th:each="p : ${peopleshow}">
+            <td>
+              <a th:href="@{/filmography}">
+                <img th:src="@{/getimage/{pid}(pid=${p.pid})}" class="profile-img" alt="Profile">
+              </a>
+            </td>
+            <td th:text="${p.peopleName}"></td>
+            <td th:text="${p.role}"></td>
+            <td>
+              <div class="action-area">
+                <a th:href="@{/updatepeople/{pid}(pid=${p.pid})}">
+                  <button type="button" class="update-btn">Update</button>
+                </a>
+                <button type="button" class="delete-btn"
+                        th:attr="data-url=@{/delete/{pid}(pid=${p.pid})}"
+                        onclick="confirmDelete(this)">
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function confirmDelete(button) {
+    let url = button.getAttribute("data-url");
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to undo this!",
+      icon: "warning",
+      iconColor: "#ff4e4e",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete!",
+      background: "#fff",
+      showClass: {
+        popup: "animate__animated animate__zoomIn"
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut"
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "The item has been removed.",
+          icon: "success",
+          iconColor: "#4caf50",
+          timer: 1300,
+          showConfirmButton: false,
+          background: "#fff",
+          showClass: {
+            popup: "animate__animated animate__fadeInUp"
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutDown"
+          }
+        });
+
+        setTimeout(() => {
+          window.location.href = url;
+        }, 1300);
+      }
+    });
+  }
+
+  // Mobile Sidebar Functionality
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const overlay = document.getElementById('overlay');
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', function () {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    });
+  }
+
+  if (overlay) {
+    overlay.addEventListener('click', function () {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    });
+  }
+
+  // Reset when back to desktop
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 1024) {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    }
+  });
+</script>
+
+</body>
+</html>

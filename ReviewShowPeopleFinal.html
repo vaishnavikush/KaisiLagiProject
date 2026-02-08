@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+          href="https://fonts.googleapis.com/css2?family=Cookie&family=Monoton&family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Initial hidden state */
+  .page-loading #page {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  /* Animated visible state */
+  #page {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+
+
+  body {
+    font-family: Poppins, sans-serif;
+    background-image: url('/images/bb.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #1e293b;
+    min-height: 100vh;
+    padding-top: 90px;
+  }
+
+  /* Header */
+  .leaderboard-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+  }
+
+  .leaderboard-title {
+    font-family: Monoton;
+    text-transform: lowercase;
+    letter-spacing: 5px;
+    font-size: 2.8rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #fff !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .leaderboard-subtitle {
+    font-family: cookie;
+    color: #b1cff9;
+    font-size: 2rem;
+    font-weight: 500;
+    color: #fff !important;
+    text-transform: lowercase;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  /* Tabs */
+  .tabs {
+    color: #ffffff;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px;
+    justify-content: center;
+  }
+
+  .tab-btn {
+    padding: 14px 28px;
+    background: rgba(230, 57, 86, 0.08);
+    border: 2px solid rgba(225, 225, 148, 0.837);
+    border-radius: 30px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .tab-btn:hover {
+    background: rgba(230, 57, 86, 0.15);
+    border-color: #e63956;
+    color: #e63956;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(230, 57, 86, 0.2);
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, #fbe98d, #78b9f2);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 8px 25px rgba(230, 57, 86, 0.35);
+  }
+
+  /* Sort Box */
+  .sort-box {
+    margin: 20px auto 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    background: rgba(246, 188, 62, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 22px 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    max-width: 500px;
+  }
+
+  .sort-box label {
+    font-family: Poppins, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #01122adb;
+  }
+
+  .sort-select {
+    padding: 12px 45px 12px 22px;
+    font-size: 1rem;
+    border-radius: 25px;
+    border: 2px solid rgba(230, 57, 86, 0.25);
+    background: #fafafa;
+    color: #8a0319;
+    cursor: pointer;
+    font-weight: 600;
+    appearance: none;
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23e63956' height='24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 20px;
+  }
+
+  .sort-select:hover,
+  .sort-select:focus {
+    outline: none;
+    border-color: #e63956;
+    box-shadow: 0 0 0 4px rgba(230, 57, 86, 0.12);
+  }
+
+  /* Content Containers */
+  .container-content {
+    display: none;
+  }
+
+  .container-content.active {
+    display: block;
+  }
+
+  /* Top 3 Winners Section */
+  .top-winners-section {
+    padding: 30px 0;
+    margin-bottom: 40px;
+  }
+
+  .winners-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 50px;
+    max-width: 1100px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+
+  }
+  @media (min-width: 768px) {
+    .winners-wrapper {
+      flex-wrap: nowrap;
+    }
+  }
+
+  .winner-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 40px 35px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    position: relative;
+    flex: 1;
+    border: 2px solid rgba(245, 158, 11, 0.3);
+    min-width: 240px;
+    max-width: 300px;
+    isolation: isolate;
+    margin: 0 15px;
+  }
+
+  .winner-card::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(135deg, #ff9800, #ff6f00, #ffb74d);
+    border-radius: 26px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .winner-card:hover::before {
+    opacity: 1;
+  }
+
+  .winner-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 10px 40px rgba(255, 165, 0, 0.6);
+    border-color: transparent;
+  }
+
+  .winner-card:hover * {
+    color: #ffffff !important;
+  }
+
+  /* FIXED PODIUM POSITIONING - BASED ON INDEX (1st, 2nd, 3rd) */
+  /* First place - always in middle, elevated */
+  .winner-card:nth-child(1) {
+    order: 2;
+    transform: translateY(-35px) scale(1.12);
+    z-index: 3;
+    border-color: rgba(245, 158, 11, 0.5);
+  }
+
+  .winner-card:nth-child(1):hover {
+    transform: translateY(-50px) scale(1.15);
+  }
+
+  .winner-card:nth-child(1) .position-number {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    animation: goldShine 2s ease-in-out infinite;
+  }
+
+  /* Second place - always on left */
+  .winner-card:nth-child(2) {
+    order: 1;
+    transform: translateY(0);
+    z-index: 2;
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .winner-card:nth-child(2):hover {
+    transform: translateY(-15px) scale(1.05);
+  }
+
+  .winner-card:nth-child(2) .position-number {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+  }
+
+  /* Third place - always on right */
+  .winner-card:nth-child(3) {
+    order: 3;
+    transform: translateY(12px);
+    z-index: 1;
+    border-color: rgba(180, 83, 9, 0.5);
+  }
+
+  .winner-card:nth-child(3):hover {
+    transform: translateY(-3px) scale(1.05);
+  }
+
+  .winner-card:nth-child(3) .position-number {
+    background: linear-gradient(135deg, #b45309, #92400e);
+  }
+
+  @media (max-width: 767px) {
+
+    .winner-card:nth-child(1),
+    .winner-card:nth-child(2),
+    .winner-card:nth-child(3) {
+      order: initial;
+      transform: none !important;
+      max-width: 100%;
+      margin: 0 auto 20px;
+    }
+
+    .winner-card:hover {
+      transform: translateY(-8px) scale(1.02) !important;
+    }
+
+    .leaderboard-title {
+      font-size: 2.2rem;
+    }
+
+    .leaderboard-subtitle {
+      font-size: 1.5rem;
+    }
+
+    body {
+      padding-top: 70px;
+    }
+  }
+
+  .position-number {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes glow {
+    0% {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    100% {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  @keyframes goldShine {
+
+    0%,
+    100% {
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    }
+
+    50% {
+      box-shadow: 0 8px 35px rgba(245, 158, 11, 0.85);
+    }
+  }
+
+  .winner-card a {
+    display: block;
+  }
+
+  .winner-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 18px;
+    overflow: hidden;
+    margin: 0 auto 18px;
+    padding: 4px;
+    background: linear-gradient(135deg, #e63956, #f59e0b);
+    transition: all 0.3s ease;
+  }
+
+  .winner-card:nth-child(1) .winner-avatar {
+    width: 160px;
+    height: 160px;
+    padding: 5px;
+  }
+
+
+  .winner-avatar:hover {
+    transform: scale(1.06) rotate(2deg);
+  }
+
+  .winner-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+  }
+
+  .winner-name {
+    font-weight: 700;
+    color: #ffffff;
+    margin-top: 12px;
+    font-size: 1.25rem;
+    word-break: break-word;
+  }
+
+  .winner-card:nth-child(1) .winner-name {
+    font-size: 1.45rem;
+    color: #ffffff;
+  }
+
+  .winner-role {
+    font-size: 0.95rem;
+    color: #ffffff;
+    margin-top: 6px;
+    font-weight: 500;
+    text-align: center;
+    white-space: normal;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+
+
+  .winner-stars {
+    font-size: 1.3rem;
+    margin-top: 10px;
+    letter-spacing: 3px;
+    color: #fbbf24;
+  }
+
+  .winner-stars .filled {
+    color: #fbbf24;
+  }
+
+  .winner-stars .empty {
+    color: #fbbf24;
+    opacity: 0.3;
+  }
+
+  .winner-rating {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #ffffff;
+    margin-top: 8px;
+  }
+
+  /* Rest of Leaderboard */
+  .rest-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .section-divider {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 35px 0;
+    position: relative;
+    padding-bottom: 18px;
+  }
+
+  .section-divider::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(90deg, #e63956, #f59e0b, #dc2626);
+    border-radius: 2px;
+  }
+
+  .rank-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    font-size: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    position: relative;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .rank-row:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 35px rgba(230, 57, 86, 0.15);
+    border-color: rgba(230, 57, 86, 0.4);
+  }
+
+  .rank-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, #e63956, #f59e0b);
+    border-radius: 20px 0 0 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .rank-row:hover::before {
+    opacity: 1;
+  }
+
+  .rank-number {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #e63956;
+    flex-shrink: 0;
+  }
+
+  .profile-img {
+    width: 88px;
+    height: 88px;
+    border-radius: 16px;
+    object-fit: cover;
+    padding: 3px;
+    background: linear-gradient(135deg, #e63956, #f59e0b);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .profile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 13px;
+  }
+
+  .rank-row:hover .profile-img {
+    transform: scale(1.05) rotate(2deg);
+  }
+
+  .details {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 5px;
+    word-wrap: break-word;
+  }
+
+  .role {
+    font-size: 0.95rem;
+    color: #ffffff;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .stars {
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+    letter-spacing: 3px;
+    color: #fbbf24;
+  }
+
+  .stars .filled {
+    color: #fbbf24;
+  }
+
+  .stars .empty {
+    color: #fbbf24;
+    opacity: 0.3;
+  }
+
+  .rating-number {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+  }
+
+  .medal {
+    position: absolute;
+    right: 22px;
+    top: 16px;
+    font-size: 2.6rem;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .leaderboard-title {
+      font-size: 2rem;
+      letter-spacing: 3px;
+    }
+
+    .leaderboard-subtitle {
+      font-size: 1.3rem;
+    }
+
+    .sort-box {
+      flex-direction: column;
+      gap: 12px;
+      padding: 18px 20px;
+      margin: 20px 15px 25px;
+    }
+
+    .winner-card {
+      max-width: 100%;
+      padding: 28px 24px;
+    }
+
+    .rank-row {
+      gap: 14px;
+      padding: 18px;
+      flex-wrap: wrap;
+    }
+
+    .profile-img {
+      width: 75px;
+      height: 75px;
+    }
+
+    .name {
+      font-size: 1.15rem;
+    }
+
+    .medal {
+      font-size: 2.2rem;
+      position: static;
+      margin-left: auto;
+    }
+
+    .tabs {
+      padding: 15px 10px;
+    }
+
+    .rest-section {
+      padding: 20px 15px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .tabs {
+      gap: 8px;
+      padding: 15px 5px;
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      font-size: 13px;
+    }
+
+    .tab-btn img {
+      width: 35px !important;
+      height: 35px !important;
+    }
+
+    .leaderboard-title {
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+    }
+
+    .leaderboard-title img {
+      width: 40px !important;
+      height: 50px !important;
+    }
+
+    .leaderboard-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .winner-avatar {
+      width: 120px;
+      height: 120px;
+    }
+
+    .winner-card:nth-child(1) .winner-avatar {
+      width: 140px;
+      height: 140px;
+    }
+
+    .winner-card {
+      padding: 24px 20px;
+    }
+
+    .winner-name {
+      font-size: 1.05rem;
+    }
+
+    .winner-card:nth-child(1) .winner-name {
+      font-size: 1.25rem;
+    }
+
+    .winner-role {
+      font-size: 0.85rem;
+    }
+
+    .profile-img {
+      width: 65px;
+      height: 65px;
+    }
+
+    .medal {
+      font-size: 1.9rem;
+    }
+
+    .rank-number {
+      width: 38px;
+      height: 38px;
+      font-size: 1rem;
+    }
+
+    .rank-row {
+      padding: 15px;
+      gap: 12px;
+    }
+
+    .name {
+      font-size: 1.05rem;
+    }
+
+    .role {
+      font-size: 0.85rem;
+    }
+
+    .section-divider {
+      font-size: 1.3rem;
+    }
+
+    .sort-box label {
+      font-size: 1rem;
+    }
+
+    .sort-select {
+      font-size: 0.9rem;
+      padding: 10px 40px 10px 18px;
+    }
+  }
+
+  /* Animation */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-25px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .rank-row {
+    animation: slideIn 0.4s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .winner-card {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  .winner-card:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .winner-card:nth-child(2) {
+    animation-delay: 0s;
+  }
+
+  .winner-card:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  /* CSS for <a> tags in Leaderboard Template */
+
+  /* Default anchor styles */
+  a {
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+  }
+
+  /* Winner card links */
+  .winner-card a {
+    display: block;
+    color: inherit;
+  }
+
+  .winner-card a:hover {
+    color: inherit;
+  }
+
+  /* Rank row links */
+  .rank-row a {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    color: inherit;
+  }
+
+  .rank-row a:hover {
+    color: inherit;
+  }
+
+  /* Tab button links */
+  .tab-btn {
+    text-decoration: none;
+    color: #ffffff;
+  }
+
+  .tab-btn:hover {
+    color: #e63956;
+    text-decoration: none;
+  }
+
+  .tab-btn.active {
+    color: white;
+    text-decoration: none;
+  }
+
+  /* Navbar links */
+  .navbar-brand {
+    text-decoration: none;
+    color: #ffffff !important;
+  }
+
+  .navbar-brand:hover {
+    color: #ffffff !important;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #ffffff !important;
+  }
+
+  .nav-link:hover {
+    text-decoration: underline;
+    color: #ffffff !important;
+  }
+
+  /* Button links */
+  a.btn {
+    text-decoration: none;
+    color: #000;
+  }
+
+  a.btn:hover {
+    text-decoration: none;
+    color: #000;
+  }
+
+  /* Ensure smooth transitions on all anchor elements */
+  a * {
+    transition: inherit;
+  }
+
+  /* ===============================
+     FIX UNWANTED UNDERLINES
+     =============================== */
+
+  .winner-card a,
+  .rank-row a {
+    text-decoration: none !important;
+    border-bottom: none !important;
+  }
+
+  .winner-card a *,
+  .rank-row a * {
+    text-decoration: none !important;
+  }
+
+  /* Prevent underline artifacts with gradient text */
+  .winner-name,
+  .name {
+    text-decoration: none !important;
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+
+  /* Chrome underline artifact fix */
+  .winner-name::after,
+  .name::after {
+    content: none !important;
+  }
+
+  /* === FIX TEXT GOING OUTSIDE CARDS === */
+
+  /* Force text to wrap inside cards */
+  .winner-name,
+  .winner-role,
+  .name,
+  .role {
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  /* Allow flex items to shrink so text can wrap */
+  .details {
+    min-width: 0;
+  }
+
+  /* Prevent images from pushing text out */
+  .profile-img,
+  .winner-avatar {
+    flex-shrink: 0;
+  }
+
+  /* Keep winner numbers visible */
+  .winner-card {
+    overflow: visible;
+  }
+
+  /* Only clip rank rows (not podium cards) */
+  .rank-row {
+    overflow: hidden;
+  }
+
+  /* Make sure numbers stay on top */
+  .position-number {
+    z-index: 20;
+  }
+
+  </style>
+</head>
+<body>
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: nav(activePage='leaderboard')}"></div>
+
+<div class="wrapper" th:attr="data-tab=${tab}">
+
+  <!-- Header -->
+  <div class="leaderboard-header">
+    <h1 class="leaderboard-title">
+      <img src="/images/award_12306282.png" alt="Award" class="tab-icon" style="width:50px;height:60px">
+      Leaderboard</h1>
+    <p class="leaderboard-subtitle">Top rated movies and talent in the industry</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <a class="tab-btn"
+       th:classappend="${tab=='movies'} ? ' active' : ''"
+       th:href="@{/showpeoplerevi(tab='movies', sort=${sort})}">
+      <img src="/images/news_14463803.gif" alt="Movies" class="tab-icon" style="border-radius:50%;width:50px;height:50px">
+      movie
+    </a>
+
+    <a class="tab-btn"
+       th:classappend="${tab=='webseries'} ? ' active' : ''"
+       th:href="@{/showpeoplerevi(tab='webseries', sort=${sort})}">
+      <img src="/images/monitor_18990639.gif" alt="Web Series" class="tab-icon" style="border-radius:50%; width:50px;height:50px">
+      Web Series</a>
+
+    <a class="tab-btn"
+       th:classappend="${tab=='serial'} ? ' active' : ''"
+       th:href="@{/showpeoplerevi(tab='serial', sort=${sort})}">
+      <img src="/images/news_14463803.gif" alt="Serial" class="tab-icon" style="border-radius:50%; width:50px;height:50px">
+      TV Serial</a>
+
+    <a class="tab-btn"
+       th:classappend="${tab=='actor'} ? ' active' : ''"
+       th:href="@{/showpeoplerevi(tab='actor', sort=${sort})}">
+      <img src="/images/holidays-party_13374009.gif" alt="Actor" class="tab-icon" style="border-radius:50%; width:50px;height:50px">
+      Actor
+    </a>
+
+    <a class="tab-btn"
+       th:classappend="${tab=='actress'} ? ' active' : ''"
+       th:href="@{/showpeoplerevi(tab='actress', sort=${sort})}">
+      <img src="/images/woman_18996039 (1).gif" alt="Actress" class="tab-icon" style="border-radius:50%; width:50px;height:50px">
+      Actresses
+    </a>
+
+    <a class="tab-btn"
+       th:classappend="${tab=='director'} ? ' active' : ''"
+       th:href="@{/showpeoplerevi(tab='director', sort=${sort})}">
+      <img src="/images/leader_17556394.gif" alt="Director" class="tab-icon" style="border-radius:50%; width:50px;height:50px">
+      Directors</a>
+
+    <a class="tab-btn"
+       th:classappend="${tab=='music'} ? ' active' : ''"
+       th:href="@{/showpeoplerevi(tab='music', sort=${sort})}">
+      <img src="/images/silence_18842920.gif" alt="Music" class="tab-icon" style="border-radius:50%; width:50px;height:50px">
+      music director
+    </a>
+  </div>
+
+  <!-- Sort Dropdown -->
+  <div class="sort-box">
+    <label for="sort">Sort By:</label>
+    <select id="sort" class="sort-select" onchange="chooseSort()">
+      <option value="rating_desc" th:selected="${sort=='rating_desc'}">Rating (High → Low)</option>
+      <option value="rating_asc" th:selected="${sort=='rating_asc'}">Rating (Low → High)</option>
+      <option value="name_asc" th:selected="${sort=='name_asc'}">Name (A → Z)</option>
+      <option value="name_desc" th:selected="${sort=='name_desc'}">Name (Z → A)</option>
+    </select>
+  </div>
+
+  <!-- MOVIES / WEB SERIES / SERIAL SECTION -->
+  <div id="movies" class="container-content" th:classappend="${tab=='movies' or tab=='webseries' or tab=='serial'} ? ' active' : ''">
+    <!-- Top 3 Winners -->
+    <div class="top-winners-section">
+      <div class="winners-wrapper">
+        <div th:each="m, iterStat : ${movieshow}"
+             th:if="${iterStat.index < 3}"
+             class="winner-card">
+          <a th:href="@{/movies/{movie_id}(movie_id=${m.movieId})}">
+            <!-- Permanent position number (1, 2, 3) -->
+            <div class="position-number">
+              <span th:text="${iterStat.index + 1}"></span>
+            </div>
+
+            <!-- PERMANENT MEDAL BASED ON RATING -->
+            <div class="medal-badge" style="font-size: 2.5rem; margin: 10px 0;">
+              <span th:if="${currentCategoryMedals != null and currentCategoryMedals['GOLD'] == m.movieId}">🥇</span>
+              <span th:if="${currentCategoryMedals != null and currentCategoryMedals['SILVER'] == m.movieId}">🥈</span>
+              <span th:if="${currentCategoryMedals != null and currentCategoryMedals['BRONZE'] == m.movieId}">🥉</span>
+            </div>
+
+            <div class="winner-avatar">
+              <img th:src="@{/getimagesok/{id}(id=${m.movieId})}" alt="movie image">
+            </div>
+            <div class="winner-name" th:text="${m.movieName}"></div>
+            <div class="winner-role">
+              <span th:text="${m.genre}"></span> | <span th:text="${m.language}"></span>
+            </div>
+            <div class="winner-stars">
+              <span th:utext="${#strings.repeat('★', movieAvgRatings[m.movieId].intValue())}"></span>
+              <span th:utext="${#strings.repeat('☆', 5 - movieAvgRatings[m.movieId].intValue())}"></span>
+            </div>
+            <div class="winner-rating">
+              <span th:text="${#numbers.formatDecimal(movieAvgRatings[m.movieId], 1, 1)}"></span> / 5
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rest of Movies -->
+    <div class="rest-section" th:if="${movieshow != null and #lists.size(movieshow) > 3}">
+      <div class="section-divider">
+        <span th:if="${tab == 'movies'}">Other Top Movies</span>
+        <span th:if="${tab == 'webseries'}">Other Top Web Series</span>
+        <span th:if="${tab == 'serial'}">Other Top TV Serials</span>
+      </div>
+      <div th:each="m, iterStat : ${movieshow}" th:if="${iterStat.index >= 3}" class="rank-row">
+        <a th:href="@{/movies/{movie_id}(movie_id=${m.movieId})}">
+          <img class="profile-img" th:src="@{/getimagesok/{id}(id=${m.movieId})}" alt="movie image">
+
+          <!-- PERMANENT MEDAL (if this movie is in top 3 by rating) -->
+          <div class="medal">
+            <span th:if="${currentCategoryMedals != null and currentCategoryMedals['GOLD'] == m.movieId}">🥇</span>
+            <span th:if="${currentCategoryMedals != null and currentCategoryMedals['SILVER'] == m.movieId}">🥈</span>
+            <span th:if="${currentCategoryMedals != null and currentCategoryMedals['BRONZE'] == m.movieId}">🥉</span>
+          </div>
+
+          <div class="details">
+            <div class="name" th:text="${m.movieName}"></div>
+            <div class="role">
+              <span th:text="${m.genre}"></span> | <span th:text="${m.language}"></span>
+            </div>
+            <div class="stars">
+              <span th:utext="${#strings.repeat('★', movieAvgRatings[m.movieId].intValue())}"></span>
+              <span th:utext="${#strings.repeat('☆', 5 - movieAvgRatings[m.movieId].intValue())}"></span>
+            </div>
+            <div class="rating-number">
+              <span th:text="${#numbers.formatDecimal(movieAvgRatings[m.movieId], 1, 1)}"></span> / 5
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PEOPLE SECTION (Actor / Actress / Director / Music Director) -->
+  <div id="people" class="container-content" th:classappend="${tab=='actor' or tab=='actress' or tab=='director' or tab=='music'} ? ' active' : ''">
+    <!-- Top 3 -->
+    <div class="top-winners-section">
+      <div class="winners-wrapper">
+        <div th:each="p, iterStat : ${peopleshow}"
+             th:if="${iterStat.index < 3}"
+             class="winner-card">
+          <a th:href="@{/people/{pid}(pid=${p.pid})}">
+            <!-- Permanent position number (1, 2, 3) -->
+            <div class="position-number">
+              <span th:text="${iterStat.index + 1}"></span>
+            </div>
+
+            <!-- PERMANENT MEDAL BASED ON RATING -->
+            <div class="medal-badge" style="font-size: 2.5rem; margin: 10px 0;">
+              <span th:if="${currentRoleMedals != null and currentRoleMedals['GOLD'] == p.pid}">🥇</span>
+              <span th:if="${currentRoleMedals != null and currentRoleMedals['SILVER'] == p.pid}">🥈</span>
+              <span th:if="${currentRoleMedals != null and currentRoleMedals['BRONZE'] == p.pid}">🥉</span>
+            </div>
+
+            <div class="winner-avatar">
+              <img th:src="@{/getimagerevi/{pid}(pid=${p.pid})}" alt="person image">
+            </div>
+            <div class="winner-name" th:text="${p.peopleName}"></div>
+            <div class="winner-role" th:text="${p.role}"></div>
+            <div class="winner-stars">
+              <span th:utext="${#strings.repeat('★', peopleAvgRatings[p.pid].intValue())}"></span>
+              <span th:utext="${#strings.repeat('☆', 5 - peopleAvgRatings[p.pid].intValue())}"></span>
+            </div>
+            <div class="winner-rating">
+              <span th:text="${#numbers.formatDecimal(peopleAvgRatings[p.pid], 1, 1)}"></span> / 5
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rest of People -->
+    <div class="rest-section" th:if="${peopleshow != null and #lists.size(peopleshow) > 3}">
+      <div class="section-divider">
+        <span th:if="${tab == 'actor'}">Other Top Actors</span>
+        <span th:if="${tab == 'actress'}">Other Top Actresses</span>
+        <span th:if="${tab == 'director'}">Other Top Directors</span>
+        <span th:if="${tab == 'music'}">Other Top Music Directors</span>
+      </div>
+      <div th:each="p, iterStat : ${peopleshow}" th:if="${iterStat.index >= 3}" class="rank-row">
+        <a th:href="@{/people/{pid}(pid=${p.pid})}">
+          <img class="profile-img" th:src="@{/getimagerevi/{pid}(pid=${p.pid})}" alt="person image">
+
+          <!-- PERMANENT MEDAL (if this person is in top 3 by rating) -->
+          <div class="medal">
+            <span th:if="${currentRoleMedals != null and currentRoleMedals['GOLD'] == p.pid}">🥇</span>
+            <span th:if="${currentRoleMedals != null and currentRoleMedals['SILVER'] == p.pid}">🥈</span>
+            <span th:if="${currentRoleMedals != null and currentRoleMedals['BRONZE'] == p.pid}">🥉</span>
+          </div>
+
+          <div class="details">
+            <div class="name" th:text="${p.peopleName}"></div>
+            <div class="role" th:text="${p.role}"></div>
+            <div class="stars">
+              <span th:utext="${#strings.repeat('★', peopleAvgRatings[p.pid].intValue())}"></span>
+              <span th:utext="${#strings.repeat('☆', 5 - peopleAvgRatings[p.pid].intValue())}"></span>
+            </div>
+            <div class="rating-number">
+              <span th:text="${#numbers.formatDecimal(peopleAvgRatings[p.pid], 1, 1)}"></span> / 5
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+        integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
+
+<script>
+  function chooseSort() {
+      const sort = document.getElementById("sort").value;
+      const wrapper = document.querySelector('.wrapper');
+      const tab = wrapper ? wrapper.dataset.tab || 'movies' : 'movies';
+      window.location.href = '/showpeoplerevi?tab=' + encodeURIComponent(tab) + '&sort=' + encodeURIComponent(sort);
+  }
+</script>
+
+</body>
+</html>
