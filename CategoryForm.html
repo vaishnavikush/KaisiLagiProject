@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+
+
+    <style>
+        body{
+                      background-color: rgb(255, 254, 250);
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+
+                       height: 80vh;
+
+            }
+
+             #formContainer{
+
+              border: 1px;
+              background-color: rgb(237, 231, 222);
+              padding: 10%;
+              border-radius: 3%;
+
+             }
+           h3{
+              font-family:Arial, Helvetica, sans-serif;
+              align-items: center;
+           }
+        a{
+              color: white;
+              text-decoration: none;
+        }
+        .btn:hover{
+          transform: translateY(-1.5px);
+          box-shadow: rgba(0,0,0,4);
+
+        }
+    </style>
+</head>
+<body>
+<div th:if="${AlreadyExists}">
+    <script>
+        alert('Already Exist ');
+    </script>
+</div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-5 col-sm-8">
+            <div class="container" id="formContainer">
+                <h3 align="center">Add category</h3>
+                <form method="post" action="categoryFill" >
+                    <div class="row justify-content-center">
+                        <label for="cateName" class="form-label">Category name</label>
+                        <input type="text" name="name" id="cateName" class="form-control" required>
+                    </div>
+                    <div class="row">
+                        <button type="submit" class="btn btn-primary mt-3" >Add category</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+</script>
+
+
+</body>
+</html>

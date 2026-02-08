@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Movie</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <script src="https://unpkg.com/@dotlottie/player-component@1.2.2/dist/dotlottie-player.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+            background-image: url("/images/bb.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(233, 69, 96, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(83, 52, 131, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .page-header h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #e94560 0%, #533483 50%, #0f3460 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      text-shadow: 2px 2px 4px rgba(233, 69, 96, 0.3);
+    }
+
+    .page-header .subtitle {
+      color: #e94560;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* Two Column Layout */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+
+    .card-custom {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 40px rgba(233, 69, 96, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      position: relative;
+      overflow: visible;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card-custom:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(233, 69, 96, 0.3);
+    }
+
+    .card-custom::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(135deg, #e94560, #533483, #0f3460);
+      border-radius: 20px;
+      z-index: -1;
+      opacity: 0.8;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .section-title {
+      font-weight: 700;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #e94560 0%, #533483 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding-left: 20px;
+      margin-bottom: 20px;
+      position: relative;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .section-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 5px;
+      height: 25px;
+      background: linear-gradient(180deg, #e94560, #533483);
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+    }
+
+    .section-title i {
+      margin-right: 8px;
+    }
+
+    .form-label {
+      color: #e94560;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control, .form-select {
+      background: #ffffff;
+      border: 2px solid rgba(233, 69, 96, 0.3);
+      color: #333333;
+      border-radius: 12px;
+      padding: 10px 12px;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      background: #fff;
+      border: 2px solid transparent;
+      box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.3);
+      color: #333333;
+      background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #e94560, #533483);
+      background-origin: padding-box, border-box;
+      background-clip: padding-box, border-box;
+    }
+
+    .form-control::placeholder {
+      color: rgba(0, 0, 0, 0.4);
+    }
+
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .image-preview {
+      height: 100px;
+      width: 100px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin: 6px;
+      border: 3px solid transparent;
+      background: linear-gradient(white, white) padding-box,
+        linear-gradient(135deg, #e94560, #533483) border-box;
+      transition: all 0.3s ease;
+    }
+
+    .image-preview:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+    }
+
+    .cast-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .cast-box {
+      background: linear-gradient(135deg, rgba(233, 69, 96, 0.05) 0%, rgba(83, 52, 131, 0.05) 100%);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid rgba(233, 69, 96, 0.2);
+    }
+
+    .cast-box label {
+      background: linear-gradient(135deg, #e94560 0%, #533483 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+
+    .text-danger {
+      font-size: 0.8rem;
+      color: #e94560;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .multi-select {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .multi-select .selected-items {
+      min-height: 40px;
+      border: 2px solid rgba(233, 69, 96, 0.3);
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #333333;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .multi-select .selected-items:hover {
+      background: #fff;
+      border: 2px solid rgba(233, 69, 96, 0.5);
+      box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+    }
+
+    .multi-select .options {
+      border: 2px solid rgba(233, 69, 96, 0.4);
+      border-radius: 10px;
+      max-height: 180px;
+      overflow-y: auto;
+      display: none;
+      background: #ffffff;
+      position: absolute;
+      z-index: 1000;
+      width: 100%;
+      margin-top: 5px;
+      box-shadow: 0 10px 40px rgba(233, 69, 96, 0.3);
+    }
+
+    .multi-select .options::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .multi-select .options::-webkit-scrollbar-track {
+      background: rgba(233, 69, 96, 0.1);
+      border-radius: 10px;
+    }
+
+    .multi-select .options::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #e94560, #533483);
+      border-radius: 10px;
+    }
+
+    .multi-select .options div {
+      padding: 10px 12px;
+      color: #333333;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid rgba(233, 69, 96, 0.1);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .multi-select .options div:hover {
+      background: linear-gradient(90deg, rgba(233, 69, 96, 0.15), rgba(83, 52, 131, 0.15));
+      padding-left: 18px;
+    }
+
+    .multi-select .options div.selected {
+      background: linear-gradient(90deg, #e94560, #533483);
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .existing-images-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 15px;
+      background: linear-gradient(135deg, rgba(233, 69, 96, 0.05) 0%, rgba(83, 52, 131, 0.05) 100%);
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border: 2px solid rgba(233, 69, 96, 0.2);
+    }
+
+    .existing-images-title {
+      background: linear-gradient(135deg, #e94560 0%, #533483 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #e94560 0%, #533483 100%);
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      padding: 14px 35px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #533483 0%, #e94560 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(233, 69, 96, 0.6);
+      color: #ffffff;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #e94560 0%, #cc3333 100%);
+      border: none;
+      color: #ffffff;
+      font-weight: 600;
+      padding: 10px 25px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(233, 69, 96, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #cc3333 0%, #e94560 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(233, 69, 96, 0.5);
+    }
+
+    small {
+      color: #533483;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    input[type="file"]::file-selector-button {
+      background: linear-gradient(135deg, #e94560, #533483);
+      border: none;
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-right: 10px;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: linear-gradient(135deg, #533483, #e94560);
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.5) sepia(1) saturate(5) hue-rotate(320deg);
+      cursor: pointer;
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e94560' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 16px 12px;
+    }
+
+    .form-select option {
+      background: #ffffff;
+      color: #333333;
+    }
+
+    #successAnimation {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    #successAnimation .popup {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+      animation: scaleIn 0.35s ease;
+    }
+
+    #successAnimation h3 {
+      color: #e94560;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+
+    #successAnimation .closeBtn {
+      margin-top: 18px;
+      padding: 10px 25px;
+      background: linear-gradient(135deg, #e94560, #533483);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    #successAnimation .closeBtn:hover {
+      background: linear-gradient(135deg, #533483, #e94560);
+      transform: scale(1.05);
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-custom {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @media (max-width: 992px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cast-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header h2 {
+        font-size: 2rem;
+      }
+
+      .card-custom {
+        padding: 20px;
+      }
+    }
+
+    .modal,
+    .modal-dialog,
+    .modal-content,
+    .modal-body {
+      pointer-events: auto !important;
+    }
+
+    .cropper-container,
+    .cropper-container * {
+      pointer-events: auto !important;
+    }
+
+    .modal-backdrop {
+      pointer-events: none !important;
+    }
+    .section-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 6px rgba(245, 116, 32, 0.6));
+}
+
+/* Mobile adjustment */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.05rem;
+    }
+
+    .section-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+ /* SIDEBAR DESKTOP */
+    :root {
+      --sidebar-width: 250px;
+      --primary-bg: #1d000a;
+      --sidebar-bg: rgba(199, 188, 191, 0.21);
+      --sidebar-border: #eb2d5d;
+    }
+
+    .layout {
+      display: flex;
+      gap: 18px;
+    }
+
+    .sidebar {
+      color: #ffffff;
+      width: 250px;
+      margin-top: 10px;
+      background: linear-gradient(145deg, rgba(102, 145, 160, 0.4), rgba(125, 1, 34, 0.522));
+      backdrop-filter: blur(10px);
+      border-left: 4px solid var(--sidebar-border);
+      padding: 20px;
+      height: calc(100vh - 100px);
+      border-radius: 12px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+      position: sticky;
+      top: 100px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar nav a {
+      display: block;
+      padding: 12px 15px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar nav a i {
+      margin-right: 8px;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: rgba(250, 234, 238, 0.3);
+      color: #fff;
+      text-shadow: 0 0 8px #ff0080;
+      transform: translateX(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 18px;
+      background-color: transparent;
+    }
+.sidebar .rounded-circle {
+            border: 2px solid var(--accent);
+            padding: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(245, 103, 138, 0.6);
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .rounded-circle:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(235, 45, 93, 1);
+        }
+
+        .sidebar h6 {
+            color: #ffffff !important;
+            text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8); }
+            50% { text-shadow: 0 2px 25px rgba(235, 45, 93, 1); }
+        }
+
+    .text-light {
+      color: #ffffff !important;
+    }
+
+    .sidebar-toggle-btn {
+      position: fixed;
+      top: 100px;
+      left: 10px;
+      z-index: 1000;
+      background: rgba(235, 45, 93, 0.8);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      display: none;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background: rgba(235, 45, 93, 1);
+    }
+
+
+      /* Mobile Sidebar */
+        @media (max-width: 991px) {
+            .sidebar {
+                position: fixed;
+                top: 120px;
+                left: 0;
+                width: 200px;
+                height: calc(100vh - 140px);
+                background: linear-gradient(145deg, #7917307b, rgba(106, 11, 36, 0.314));
+                backdrop-filter: blur(10px);
+                z-index: 9999;
+                transform: translateX(-200px);
+                transition: transform 0.35s ease;
+                border-radius: 0 14px 14px 0;
+                box-shadow: 6px 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            /* Thin visible strip */
+            .sidebar::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                right: -10px;
+                width: 10px;
+                height: 100%;
+                background: linear-gradient(145deg, #79172f, rgba(106, 11, 36, 0.95));
+                border-radius: 0 10px 10px 0;
+                cursor: pointer;
+            }
+
+      /* Open on hover/touch */
+      .sidebar:hover,
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-strip {
+        position: absolute;
+        top: 0;
+        right: -10px;
+        width: 10px;
+        height: 100%;
+        background: linear-gradient(145deg, #79172f, rgba(106, 11, 36, 0.95));
+        border-radius: 0 10px 10px 0;
+        cursor: pointer;
+      }
+
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .main-content {
+        padding: 10px;
+      }
+    }
+    .back-btn-6 {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid #00d9ff;
+            color: #00d9ff;
+            padding: 0.9rem 2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3),
+                        inset 0 0 10px rgba(0, 217, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
+
+        .back-btn-6:hover {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00ffff;
+            color: #00ffff;
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(0, 217, 255, 0.6),
+                        inset 0 0 20px rgba(0, 217, 255, 0.2);
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
+        }
+
+        .back-btn-6 i {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 0 5px rgba(0, 217, 255, 0.5));
+        }
+
+        .back-btn-6:hover i {
+            transform: translateX(-5px);
+        }
+
+  </style>
+</head>
+<body>
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: nav(activePage='dashboard')}"></div>
+
+<!-- LAYOUT -->
+<div class="container-fluid">
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar mb-3">
+      <div class="text-center mb-4" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <a th:href="@{/profile}">
+          <img th:src="${photo != null} ? 'data:image/jpeg;base64,' + ${photo} : @{/images/default.png}"
+               alt="Profile Picture" width="50" height="50" class="rounded-circle" />
+        </a>
+        <h6 style="font-family: 'Poppins', sans-serif; color: #ffffff; margin-top: 0;" th:text="${username}">Admin</h6>
+        <!-- <h5 style="font-family: 'Cookie', cursive; color: #ffffff; margin-top: 5px;">Kaisi Lagi</h5> -->
+      </div>
+
+      <nav>
+        <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a class="active" th:href="@{/moviedelete}" th:classappend="${activePage == 'moviedelete'} ? 'active' : ''">
+          <i class="bi bi-camera-reels-fill"></i> All Movies
+        </a>
+<!--        <a th:href="@{/add}" th:classappend="${activePage == 'addMovies'} ? 'active' : ''">-->
+<!--          <i class="bi bi-camera-reels-fill"></i> Add Movies-->
+<!--        </a>-->
+        <a th:href="@{/setpeople}" th:classappend="${activePage == 'setpeople'} ? 'active' : ''">
+          <i class="bi bi-person-fill-add"></i> Add Crew
+        </a>
+        <a th:href="@{/showpeople}" th:classappend="${activePage == 'showpeople'} ? 'active' : ''">
+          <i class="bi bi-people-fill"></i> All Crew
+        </a>
+        <a th:href="@{/users}" th:classappend="${activePage == 'makeAdmin'} ? 'active' : ''">
+          <i class="bi bi-person-workspace"></i> Create Admin
+        </a>
+        <a th:href="@{/block-users}" th:classappend="${activePage == 'blockUser'} ? 'active' : ''">
+          <i class="bi bi-person-fill-gear"></i> All Users
+        </a>
+        <a th:href="@{/ShowReports}" th:classappend="${activePage == 'ShowReports'} ? 'active' : ''">
+          <i class="bi bi-bar-chart-fill"></i> All Reports
+        </a>
+        <a th:href="@{/list}" th:classappend="${activePage == 'badgelist'} ? 'active' : ''">
+          <i class="bi bi-award-fill"></i>Badges
+        </a>
+        <a th:href="@{/logout}">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </nav>
+      <div class="sidebar-strip"></div>
+    </aside>
+<div class="main-container">
+  <div class="page-header">
+    <h2><i class="bi bi-film"></i> Edit Movie</h2>
+    <p class="subtitle">Update Movie Details</p>
+  </div>
+
+  <form id="editMovieForm" th:action="@{/updateMovie}" th:object="${movie}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{movieId}"/>
+
+    <!-- GRID LAYOUT -->
+    <div class="form-grid">
+
+      <!-- LEFT: MOVIE INFORMATION -->
+      <div class="card-custom">
+        <p class="section-title"><i class="bi bi-info-circle-fill"></i>Movie Info</p>
+
+        <div class="mb-3">
+          <label class="form-label"><i class="bi bi-film"></i> Movie Title</label>
+          <input type="text" th:field="*{movieName}" class="form-control" placeholder="Enter movie title" required>
+          <div class="text-danger" id="movieNameError"></div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="bi bi-translate"></i> Language</label>
+            <div class="multi-select" id="languageSelect">
+              <input type="hidden" id="existingLanguages" th:value="${movie.language}">
+              <div class="selected-items">Select languages</div>
+              <div class="options"></div>
+            </div>
+            <input type="hidden" name="language" id="languageInput">
+            <div class="text-danger" id="languageError"></div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label"><i class="bi bi-tags-fill"></i> Genre</label>
+            <div class="multi-select" id="genreSelect">
+              <input type="hidden" id="existingGenres" th:value="${movie.genre}">
+              <div class="selected-items">Select genres</div>
+              <div class="options"></div>
+            </div>
+            <input type="hidden" name="genre" id="genreInput">
+            <div class="text-danger" id="genreError"></div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label"><i class="bi bi-card-text"></i> Description</label>
+          <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Enter movie description" required></textarea>
+          <div class="text-danger" id="descriptionError"></div>
+          <small id="descCount">0 / 500 characters</small>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="bi bi-calendar-event"></i> Release Date</label>
+            <input type="date" th:field="*{releaseDate}" class="form-control" required>
+            <div class="text-danger" id="releaseDateError"></div>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="bi bi-folder-fill"></i> Category</label>
+            <select th:field="*{category.id}" class="form-select" required>
+              <option value="">Choose category</option>
+              <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+            </select>
+            <div class="text-danger" id="categoryError"></div>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label"><i class="bi bi-clock-fill"></i> Duration (min)</label>
+            <input type="number" th:field="*{duration}" class="form-control" placeholder="150" min="1" required>
+            <div class="text-danger" id="durationError"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: CAST SECTION -->
+      <div class="card-custom">
+        <p class="section-title"><i class="bi bi-people-fill"></i>Movie Cast</p>
+
+        <div class="cast-grid">
+          <!-- ACTORS -->
+          <div class="cast-box">
+            <label> <img th:src="@{/images/celebrity (1).png}" class="section-icon"> Actors</label>
+            <div class="multi-select" id="actorSelect">
+              <div class="selected-items">Select actors</div>
+              <div class="options">
+                <div th:each="p : ${actors}"
+                     th:text="${p.peopleName}"
+                     th:data-value="${p.pid}"
+                     th:classappend="${#lists.contains(movie.movieCasts.?[people.role=='Actor'].![people.pid], p.pid)} ? 'selected' : ''">
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="actorIds" id="actorInput">
+          </div>
+
+          <!-- ACTRESSES -->
+          <div class="cast-box">
+            <label><img th:src="@{/images/actress.png}" class="section-icon"> Actress</label>
+            <div class="multi-select" id="actressSelect">
+              <div class="selected-items">Select actress</div>
+              <div class="options">
+                <div th:each="p : ${actresses}"
+                     th:text="${p.peopleName}"
+                     th:data-value="${p.pid}"
+                     th:classappend="${#lists.contains(movie.movieCasts.?[people.role=='Actress'].![people.pid], p.pid)} ? 'selected' : ''">
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="actressIds" id="actressInput">
+          </div>
+
+          <!-- DIRECTORS -->
+          <div class="cast-box">
+            <label><img th:src="@{/images/director.png}" class="section-icon"></i> Directors</label>
+            <div class="multi-select" id="directorSelect">
+              <div class="selected-items">Select directors</div>
+              <div class="options">
+                <div th:each="p : ${directors}"
+                     th:text="${p.peopleName}"
+                     th:data-value="${p.pid}"
+                     th:classappend="${#lists.contains(movie.movieCasts.?[people.role=='Director'].![people.pid], p.pid)} ? 'selected' : ''">
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="directorIds" id="directorInput">
+          </div>
+
+          <!-- LYRICISTS -->
+          <div class="cast-box">
+            <label><i class="bi bi-pencil-fill"></i> Lyricists</label>
+            <div class="multi-select" id="lyricistSelect">
+              <div class="selected-items">Select lyricists</div>
+              <div class="options">
+                <div th:each="p : ${lyricists}"
+                     th:text="${p.peopleName}"
+                     th:data-value="${p.pid}"
+                     th:classappend="${#lists.contains(movie.movieCasts.?[people.role=='Lyricist'].![people.pid], p.pid)} ? 'selected' : ''">
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="lyricistIds" id="lyricistInput">
+          </div>
+
+          <!-- SINGERS -->
+          <div class="cast-box">
+            <label><i class="bi bi-mic-fill"></i> Singers</label>
+            <div class="multi-select" id="singerSelect">
+              <div class="selected-items">Select singers</div>
+              <div class="options">
+                <div th:each="p : ${singers}"
+                     th:text="${p.peopleName}"
+                     th:data-value="${p.pid}"
+                     th:classappend="${#lists.contains(movie.movieCasts.?[people.role=='Singer'].![people.pid], p.pid)} ? 'selected' : ''">
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="singerIds" id="singerInput">
+          </div>
+
+          <!-- MUSIC DIRECTORS -->
+          <div class="cast-box">
+            <label><img th:src="@{/images/orchestra.png}" class="section-icon"></i> Music Directors</label>
+            <div class="multi-select" id="musicDirectorSelect">
+              <div class="selected-items">Select music directors</div>
+              <div class="options">
+                <div th:each="p : ${musicDirectors}"
+                     th:text="${p.peopleName}"
+                     th:data-value="${p.pid}"
+                     th:classappend="${#lists.contains(movie.movieCasts.?[people.role=='Music Director'].![people.pid], p.pid)} ? 'selected' : ''">
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="musicDirectorsIds" id="musicDirectorInput">
+          </div>
+        </div>
+      </div>
+
+      <!-- IMAGE SECTION - FULL WIDTH -->
+      <div class="card-custom full-width">
+        <p class="section-title"><i class="bi bi-images"></i>Movie Images</p>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <p class="existing-images-title"><i class="bi bi-collection-fill"></i> Existing Images</p>
+            <div class="existing-images-container">
+              <img th:each="img : ${movie.images}" th:src="@{/images/{id}(id=${img.imageId})}" class="image-preview">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label"><i class="bi bi-cloud-upload-fill"></i> Upload New Images</label>
+            <input type="file" name="photos" class="form-control mb-3" multiple id="imageInput" accept="image/*">
+            <div id="previewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
+            <button type="button" id="removeAllBtn" class="btn btn-danger w-100">
+              <i class="bi bi-trash-fill me-2"></i>Clear All New Images
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CROP MODAL -->
+    <div class="modal fade" id="cropModal" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Crop Image</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body d-flex justify-content-center align-items-center" style="height:70vh">
+            <img id="cropImage" style="max-width:100%; max-height:100%">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="skipCrop">Skip</button>
+            <button type="button" class="btn btn-primary" id="cropBtn">Crop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 py-3">
+      <i class="bi bi-check-circle-fill me-2"></i>Update
+    </button>
+  </form>
+</div>
+
+<!-- Success Popup -->
+<div id="successAnimation" th:if="${success}">
+  <div class="popup">
+    <dotlottie-player
+            src="/animation/Success.lottie"
+            autoplay
+            loop
+            style="width:250px; height:250px;">
+    </dotlottie-player>
+    <h3>Movie Updated Successfully!</h3>
+    <button class="closeBtn">Ok</button>
+  </div>
+</div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--&lt;!&ndash; Cropper &ndash;&gt;-->
+
+<!-- Load Lottie Web Component -->
+<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.js"></script>
+<!-- Bootstrap JS (required for modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Cropper -->
+<link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css">
+<script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
+
+<script>
+  // Success Animation Handler
+  const popup = document.getElementById("successAnimation");
+  if (popup) {
+    popup.style.opacity = "0";
+    popup.style.transition = "opacity 0.4s ease";
+    requestAnimationFrame(() => {
+      popup.style.opacity = "1";
+    });
+
+    const okBtn = popup.querySelector(".closeBtn");
+    if (okBtn) {
+      okBtn.addEventListener("click", function() {
+        popup.style.opacity = "0";
+        setTimeout(() => { window.location.href = "/home"; }, 400);
+      });
+    }
+  }
+
+  // Check for success parameter in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('success') === 'true') {
+    // Create and show success popup
+    const successDiv = document.createElement('div');
+    successDiv.id = 'successAnimation';
+    successDiv.innerHTML = `
+      <div class="popup">
+        <dotlottie-player
+          src="/animation/Success.lottie"
+          autoplay
+          loop
+          style="width:250px; height:250px;">
+        </dotlottie-player>
+        <h3>Movie Updated Successfully!</h3>
+        <button class="closeBtn">Ok</button>
+      </div>
+    `;
+    document.body.appendChild(successDiv);
+
+    successDiv.style.opacity = "0";
+    successDiv.style.transition = "opacity 0.4s ease";
+    requestAnimationFrame(() => {
+      successDiv.style.opacity = "1";
+    });
+
+    const closeBtn = successDiv.querySelector(".closeBtn");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function() {
+        successDiv.style.opacity = "0";
+        setTimeout(() => {
+          window.location.href = "/home";
+        }, 400);
+      });
+    }
+  }
+</script>
+
+
+<!-- SCRIPTS -->
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // ===== LOTTIE POPUP =====
+      const okBtn = document.getElementById("okBtn");
+      const popup = document.getElementById("lottiePopup");
+      if(okBtn){
+          okBtn.addEventListener("click", () => {
+              popup.style.transition = "opacity 0.5s";
+              popup.style.opacity = 0;
+              setTimeout(() => { window.location.href = "/home"; }, 500);
+          });
+      }
+
+      // ===== POPULATE LANGUAGE & GENRE =====
+      const languages = ["English","Hindi","Tamil","Telugu","Malayalam","Kannada","Bengali","Marathi","Punjabi","Gujarati","Odia","Assamese","Urdu","Korean","Japanese","French","Spanish","German","Chinese","Other"];
+      const genres = ["Action","Adventure","Thriller","Crime","Comedy","Romance","Drama","Sci-Fi","Fantasy","Horror","Mystery","Documentary","Animation","Biography","Sports","Family","Musical","War","Western","Short Film"];
+
+      function populateMultiSelect(containerId, optionsArray){
+          const container = document.getElementById(containerId);
+          if(!container) return;
+          const optionsDiv = container.querySelector('.options');
+          optionsArray.forEach(opt => {
+              const div = document.createElement('div');
+              div.textContent = opt;
+              div.dataset.value = opt;
+              optionsDiv.appendChild(div);
+          });
+      }
+
+      populateMultiSelect('languageSelect', languages);
+      populateMultiSelect('genreSelect', genres);
+
+      // ===== MULTI-SELECT LOGIC FOR CAST / LANGUAGE / GENRE =====
+      ['actorSelect','actressSelect','directorSelect','lyricistSelect','singerSelect','musicDirectorSelect','languageSelect','genreSelect'].forEach(id => {
+          const hiddenInput = id.replace('Select','Input');
+          const container = document.getElementById(id);
+          if(!container) return;
+
+          const selectedDiv = container.querySelector('.selected-items');
+          const optionsDiv = container.querySelector('.options');
+          const hidden = document.getElementById(hiddenInput);
+
+          function updateSelected(){
+              const selectedOptions = Array.from(optionsDiv.querySelectorAll('div.selected'));
+              hidden.value = selectedOptions.map(d => d.dataset.value).join(',');
+              selectedDiv.innerText = selectedOptions.map(d => d.textContent).join(', ') || 'Select';
+          }
+
+          optionsDiv.querySelectorAll('div').forEach(option => {
+              option.addEventListener('click', () => {
+                  option.classList.toggle('selected');
+                  updateSelected();
+              });
+          });
+
+          selectedDiv.addEventListener('click', () => {
+              optionsDiv.style.display = optionsDiv.style.display === 'block' ? 'none' : 'block';
+          });
+
+          document.addEventListener('click', (e) => {
+              if(!container.contains(e.target)) optionsDiv.style.display = 'none';
+          });
+
+          updateSelected();
+      });
+
+      // ===== DESCRIPTION CHARACTER COUNTER =====
+      const descriptionInput = document.querySelector('textarea[name="description"]');
+      const descCount = document.getElementById('descCount');
+      descriptionInput.addEventListener('input', () => {
+          if(descriptionInput.value.length > 500) descriptionInput.value = descriptionInput.value.substring(0,500);
+          descCount.innerText = `${descriptionInput.value.length} / 500 characters`;
+      });
+      descCount.innerText = `${descriptionInput.value.length} / 500 characters`;
+
+      // ===== IMAGE PREVIEW =====
+      const imageInput = document.getElementById("imageInput");
+      const previewContainer = document.getElementById("previewContainer");
+      const removeAllBtn = document.getElementById("removeAllBtn");
+      let selectedFiles = [];
+
+      imageInput.addEventListener("change", (e) => {
+          selectedFiles = Array.from(e.target.files || []);
+          updatePreview();
+      });
+
+      function updatePreview(){
+          previewContainer.innerHTML = "";
+          selectedFiles.forEach(file => {
+              const reader = new FileReader();
+              reader.onload = e => {
+                  const col = document.createElement("div");
+                  col.className = "col-6 col-md-3";
+                  col.innerHTML = `<div class="image-preview-card"><img src="${e.target.result}"></div>`;
+                  previewContainer.appendChild(col);
+              };
+              reader.readAsDataURL(file);
+          });
+      }
+
+      removeAllBtn.addEventListener("click", () => {
+          selectedFiles = [];
+          imageInput.value = "";
+          previewContainer.innerHTML = "";
+      });
+  });
+</script>
+<script>
+  document.getElementById("editMovieForm").addEventListener("submit", function (e) {
+      let isValid = true;
+
+      const showError = (id, msg) => {
+          document.getElementById(id).innerText = msg;
+          isValid = false;
+      };
+      const clearError = id => document.getElementById(id).innerText = "";
+
+      /* ---------- LANGUAGE ---------- */
+      const languageValues = getSelectedValues("languageSelect");
+      if (languageValues.length === 0) {
+          showError("languageError", "Please select at least one language");
+      } else {
+          clearError("languageError");
+          document.getElementById("languageInput").value = languageValues.join(",");
+      }
+
+      /* ---------- GENRE ---------- */
+      const genreValues = getSelectedValues("genreSelect");
+      if (genreValues.length === 0) {
+          showError("genreError", "Please select at least one genre");
+      } else {
+          clearError("genreError");
+          document.getElementById("genreInput").value = genreValues.join(",");
+      }
+
+      /* ---------- RELEASE DATE ---------- */
+      const releaseDate = document.querySelector("[name='releaseDate']").value;
+      if (releaseDate) {
+          const selectedDate = new Date(releaseDate);
+          const today = new Date();
+          today.setHours(0,0,0,0);
+
+          if (selectedDate > today) {
+              showError("releaseDateError", "Release date cannot be in the future");
+          } else {
+              clearError("releaseDateError");
+          }
+      }
+
+      /* ---------- DURATION ---------- */
+      const duration = document.querySelector("[name='duration']").value;
+      if (!duration || duration <= 0) {
+          showError("durationError", "Duration must be greater than 0");
+      } else {
+          clearError("durationError");
+      }
+
+      /* ---------- CAST ---------- */
+      validateRole("actorSelect", "actorInput", "Select at least one actor");
+      validateRole("actressSelect", "actressInput", "Select at least one actress");
+      validateRole("directorSelect", "directorInput", "Select at least one director");
+      validateRole("lyricistSelect", "lyricistInput", "Select at least one lyricist");
+      validateRole("singerSelect", "singerInput", "Select at least one singer");
+      validateRole("musicDirectorSelect", "musicDirectorInput", "Select at least one music director");
+
+      if (!isValid) e.preventDefault();
+  });
+
+  function getSelectedValues(selectId) {
+      return Array.from(
+          document.querySelectorAll(`#${selectId} .options div.selected`)
+      ).map(el => el.dataset.value);
+  }
+
+  function validateRole(selectId, inputId, message) {
+      const values = getSelectedValues(selectId);
+      if (values.length === 0) {
+          showLottieError(message);
+          isValid = false;
+      } else {
+          document.getElementById(inputId).value = values.join(",");
+      }
+  }
+</script>
+<script>
+  function showLottieError(message) {
+      document.getElementById("errorMessage").innerText = message;
+      document.getElementById("errorLottiePopup").style.display = "flex";
+  }
+
+  document.getElementById("errorOkBtn").addEventListener("click", () => {
+      document.getElementById("errorLottiePopup").style.display = "none";
+  });
+
+  function preselectValues(selectId, values) {
+      if (!values) return;
+      const arr = values.split(",");
+
+      document.querySelectorAll(`#${selectId} .options div`).forEach(opt => {
+          if (arr.includes(opt.dataset.value)) {
+              opt.classList.add("selected");
+          }
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+      preselectValues("languageSelect", document.getElementById("existingLanguages").value);
+      preselectValues("genreSelect", document.getElementById("existingGenres").value);
+  });
+</script>
+<script>
+  function updateLabel(selectId) {
+      const container = document.getElementById(selectId);
+      if (!container) return;
+
+      const selectedItemsDiv = container.querySelector(".selected-items");
+      const selectedOptions = container.querySelectorAll(".options div.selected");
+
+      if (selectedOptions.length > 0) {
+          selectedItemsDiv.innerText =
+              Array.from(selectedOptions)
+                  .map(opt => opt.textContent.trim())
+                  .join(", ");
+      } else {
+          selectedItemsDiv.innerText = "Select";
+      }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+      // 🔥 update label AFTER preselection
+      updateLabel("languageSelect");
+      updateLabel("genreSelect");
+
+      updateLabel("actorSelect");
+      updateLabel("actressSelect");
+      updateLabel("directorSelect");
+      updateLabel("lyricistSelect");
+      updateLabel("singerSelect");
+      updateLabel("musicDirectorSelect");
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+      // ===== PRESELECT MULTI-SELECT VALUES =====
+      function preselectValues(selectId, values) {
+          if (!values) return;
+          const arr = values.split(",");
+          document.querySelectorAll(`#${selectId} .options div`).forEach(opt => {
+              if (arr.includes(opt.dataset.value)) {
+                  opt.classList.add("selected");
+              }
+          });
+      }
+
+      preselectValues("languageSelect", document.getElementById("existingLanguages").value);
+      preselectValues("genreSelect", document.getElementById("existingGenres").value);
+
+      // ===== UPDATE LABELS =====
+      function updateLabel(selectId) {
+          const container = document.getElementById(selectId);
+          if (!container) return;
+          const selectedItemsDiv = container.querySelector(".selected-items");
+          const selectedOptions = container.querySelectorAll(".options div.selected");
+
+          selectedItemsDiv.innerText =
+              selectedOptions.length > 0
+              ? Array.from(selectedOptions).map(opt => opt.textContent.trim()).join(", ")
+              : "Select";
+      }
+
+      ["languageSelect","genreSelect","actorSelect","actressSelect","directorSelect","lyricistSelect","singerSelect","musicDirectorSelect"].forEach(updateLabel);
+
+      // ===== HELPER: GET SELECTED VALUES =====
+      function getSelectedValues(selectId){
+          return Array.from(document.querySelectorAll(`#${selectId} .options div.selected`))
+                      .map(el => el.dataset.value);
+      }
+
+      // ===== LOTTIE ERROR POPUP =====
+      function showLottieError(message){
+          const popup = document.getElementById("errorLottiePopup");
+          document.getElementById("errorMessage").innerText = message;
+          popup.style.display = "flex";
+          // Auto hide after 3 seconds
+          setTimeout(() => { popup.style.display = "none"; }, 3000);
+      }
+
+      document.getElementById("errorOkBtn").addEventListener("click", () => {
+          document.getElementById("errorLottiePopup").style.display = "none";
+      });
+
+      // ===== VALIDATE ROLES =====
+      function validateRole(selectId, inputId, message){
+          const values = getSelectedValues(selectId);
+          if(values.length === 0){
+              showLottieError(message);
+              return false;
+          } else {
+              document.getElementById(inputId).value = values.join(",");
+              return true;
+          }
+      }
+
+      // ===== FORM SUBMIT VALIDATION =====
+      document.getElementById("editMovieForm").addEventListener("submit", function(e){
+          e.preventDefault(); // prevent submit until validation passes
+          let isValid = true;
+
+          // Movie title
+          const movieTitle = document.querySelector("input[name='movieName']").value.trim();
+          if(!movieTitle){ showLottieError("Movie title is required"); return; }
+
+          // Language
+          const languages = getSelectedValues("languageSelect");
+          if(languages.length === 0){ showLottieError("Please select at least one language"); return; }
+          document.getElementById("languageInput").value = languages.join(",");
+
+          // Genre
+          const genres = getSelectedValues("genreSelect");
+          if(genres.length === 0){ showLottieError("Please select at least one genre"); return; }
+          document.getElementById("genreInput").value = genres.join(",");
+
+          // Description
+          const description = document.querySelector("textarea[name='description']").value.trim();
+          if(!description){ showLottieError("Description cannot be empty"); return; }
+
+          // Release date
+          const releaseDate = document.querySelector("input[name='releaseDate']").value;
+          if(!releaseDate){ showLottieError("Release date is required"); return; }
+          const selectedDate = new Date(releaseDate);
+          const today = new Date(); today.setHours(0,0,0,0);
+          if(selectedDate > today){ showLottieError("Release date cannot be in the future"); return; }
+
+          // Category
+          const category = document.querySelector("select[name='category.id']").value;
+          if(!category){ showLottieError("Please select a category"); return; }
+
+          // Duration
+          const duration = document.querySelector("input[name='duration']").value;
+          if(!duration || duration <= 0){ showLottieError("Duration must be greater than 0"); return; }
+
+          // CASTS
+          const castFields = [
+              {selectId:"actorSelect", inputId:"actorInput", msg:"Select at least one actor"},
+              {selectId:"actressSelect", inputId:"actressInput", msg:"Select at least one actress"},
+              {selectId:"directorSelect", inputId:"directorInput", msg:"Select at least one director"},
+<!--              {selectId:"lyricistSelect", inputId:"lyricistInput", msg:"Select at least one lyricist"},-->
+<!--              {selectId:"singerSelect", inputId:"singerInput", msg:"Select at least one singer"},-->
+              {selectId:"musicDirectorSelect", inputId:"musicDirectorInput", msg:"Select at least one music director"}
+          ];
+
+          for(let f of castFields){
+              if(!validateRole(f.selectId, f.inputId, f.msg)) return;
+          }
+
+          // All validation passed, submit
+          this.submit();
+      });
+
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+      function getSelectedValues(selectId){
+          return Array.from(document.querySelectorAll(`#${selectId} .options div.selected`))
+                      .map(el => el.dataset.value);
+      }
+
+      function showLottieWarning(message){
+          // Create overlay div
+          const overlay = document.createElement("div");
+          overlay.style.position = "fixed";
+          overlay.style.top = 0;
+          overlay.style.left = 0;
+          overlay.style.width = "100%";
+          overlay.style.height = "100%";
+          overlay.style.background = "rgba(0,0,0,0.6)";
+          overlay.style.display = "flex";
+          overlay.style.justifyContent = "center";
+          overlay.style.alignItems = "center";
+          overlay.style.zIndex = 99999;
+          overlay.style.backdropFilter = "blur(4px)";
+          overlay.style.animation = "fadeIn 0.3s ease-in";
+
+          // Create popup box
+          const box = document.createElement("div");
+          box.style.background = "linear-gradient(135deg, #ffe5d9, #ffb3b3)";
+          box.style.padding = "25px 35px";
+          box.style.borderRadius = "25px";
+          box.style.textAlign = "center";
+          box.style.width = "380px";
+          box.style.boxShadow = "0 8px 30px rgba(0,0,0,0.35)";
+          box.style.animation = "popupSlide 0.35s ease-out";
+
+          // Add Lottie animation
+          const lottie = document.createElement("dotlottie-wc");
+          lottie.src = "/animation/warning.lottie"; // your Lottie file path
+          lottie.style.width = "180px";
+          lottie.style.height = "180px";
+          lottie.autoplay = true;
+
+          // Add bold message
+          const msg = document.createElement("p");
+          msg.style.color = "#b30000";
+          msg.style.fontWeight = "700";
+          msg.style.fontSize = "17px";
+          msg.style.marginTop = "12px";
+          msg.innerText = message;
+
+          box.appendChild(lottie);
+          box.appendChild(msg);
+          overlay.appendChild(box);
+          document.body.appendChild(overlay);
+
+          // Auto-remove after 3 seconds
+          setTimeout(() => { overlay.remove(); }, 3000);
+      }
+
+      function validateRole(selectId, inputId, message){
+          const values = getSelectedValues(selectId);
+          if(values.length === 0){
+              showLottieWarning(message);
+              return false;
+          } else {
+              document.getElementById(inputId).value = values.join(",");
+              return true;
+          }
+      }
+
+      document.getElementById("editMovieForm").addEventListener("submit", function(e){
+          e.preventDefault();
+
+          // Movie title
+          const movieTitle = document.querySelector("input[name='movieName']").value.trim();
+          if(!movieTitle){ showLottieWarning("Movie title is required"); return; }
+
+          // Language
+          const languages = getSelectedValues("languageSelect");
+          if(languages.length === 0){ showLottieWarning("Please select at least one language"); return; }
+          document.getElementById("languageInput").value = languages.join(",");
+
+          // Genre
+          const genres = getSelectedValues("genreSelect");
+          if(genres.length === 0){ showLottieWarning("Please select at least one genre"); return; }
+          document.getElementById("genreInput").value = genres.join(",");
+
+          // Description
+          const description = document.querySelector("textarea[name='description']").value.trim();
+          if(!description){ showLottieWarning("Description cannot be empty"); return; }
+
+          // Release date
+          const releaseDate = document.querySelector("input[name='releaseDate']").value;
+          if(!releaseDate){ showLottieWarning("Release date is required"); return; }
+          const selectedDate = new Date(releaseDate);
+          const today = new Date(); today.setHours(0,0,0,0);
+          if(selectedDate > today){ showLottieWarning("Release date cannot be in the future"); return; }
+
+          // Category
+          const category = document.querySelector("select[name='category.id']").value;
+          if(!category){ showLottieWarning("Please select a category"); return; }
+
+          // Duration
+          const duration = document.querySelector("input[name='duration']").value;
+          if(!duration || duration <= 0){ showLottieWarning("Duration must be greater than 0"); return; }
+
+          // CASTS
+          const castFields = [
+              {selectId:"actorSelect", inputId:"actorInput", msg:"Select at least one actor"},
+              {selectId:"actressSelect", inputId:"actressInput", msg:"Select at least one actress"},
+              {selectId:"directorSelect", inputId:"directorInput", msg:"Select at least one director"},
+              {selectId:"lyricistSelect", inputId:"lyricistInput", msg:"Select at least one lyricist"},
+              {selectId:"singerSelect", inputId:"singerInput", msg:"Select at least one singer"},
+              {selectId:"musicDirectorSelect", inputId:"musicDirectorInput", msg:"Select at least one music director"}
+          ];
+
+          for(let f of castFields){
+              if(!validateRole(f.selectId, f.inputId, f.msg)) return;
+          }
+
+          this.submit();
+      });
+
+  });
+</script>
+<script>
+  const imageInput = document.getElementById("imageInput");
+  const previewContainer = document.getElementById("previewContainer");
+  const cropImage = document.getElementById("cropImage");
+  const cropBtn = document.getElementById("cropBtn");
+  const skipBtn = document.getElementById("skipCrop");
+  const modalEl = document.getElementById("cropModal");
+
+  let files = [];
+  let index = 0;
+  let cropper = null;
+  let modal = new bootstrap.Modal(modalEl);
+
+  // STEP 1: Select files
+  imageInput.addEventListener("change", (e) => {
+      files = Array.from(e.target.files);
+      index = 0;
+      previewContainer.innerHTML = "";
+      if (files.length > 0) openCropper();
+  });
+
+  // STEP 2: Open cropper for current image
+  function openCropper() {
+      if (index >= files.length) {
+          updatePreview();
+          return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+          cropImage.src = reader.result;
+          modal.show();
+      };
+      reader.readAsDataURL(files[index]);
+  }
+
+  // STEP 3: Initialize cropper AFTER modal visible
+ modalEl.addEventListener("shown.bs.modal", () => {
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+
+    // 🔑 Wait for modal + image layout
+    setTimeout(() => {
+        cropper = new Cropper(cropImage, {
+            aspectRatio: NaN,   // free
+            viewMode: 1,
+            autoCrop: true,
+            autoCropArea: 1,
+            responsive: true,
+            background: false,
+            movable: true,
+            zoomable: true,
+            cropBoxMovable: true,
+            cropBoxResizable: true
+        });
+    }, 100);
+});
+
+
+  // STEP 4: Destroy cropper when modal hides
+ modalEl.addEventListener("hidden.bs.modal", () => {
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+
+    if (action) {
+        index++;       // ✅ move index ONLY AFTER modal fully closed
+        action = null;
+        openCropper(); // ✅ safe now
+    }
+});
+
+
+  // STEP 5: Crop button
+ let action = null; // "crop" | "skip"
+
+// STEP 5: Crop button
+cropBtn.addEventListener("click", () => {
+    if (!cropper) return;
+
+    const canvas = cropper.getCroppedCanvas({
+        width: 800,
+        height: 800,
+        imageSmoothingQuality: "high"
+    });
+
+    canvas.toBlob(blob => {
+        files[index] = new File([blob], files[index].name, {
+            type: "image/jpeg"
+        });
+        action = "crop";
+        modal.hide();
+    }, "image/jpeg");
+});
+
+// STEP 6: Skip button
+skipBtn.addEventListener("click", () => {
+    action = "skip";
+    modal.hide();
+});
+
+
+  // STEP 7: Update preview + input files
+  function updatePreview() {
+      previewContainer.innerHTML = "";
+      const dt = new DataTransfer();
+
+      files.forEach(file => {
+          dt.items.add(file);
+          const reader = new FileReader();
+          reader.onload = e => {
+              previewContainer.innerHTML += `
+                <div class="col-6 col-md-3">
+                  <img src="${e.target.result}" class="img-fluid rounded">
+                </div>`;
+          };
+          reader.readAsDataURL(file);
+      });
+
+      imageInput.files = dt.files;
+  }
+</script>
+</body>
+</html>
