@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Movie - Movie Management System</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cookie&family=Monoton&family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <!-- Cropper.js CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    :root {
+      --cinema-orange: #f57420;
+      --cinema-red: #cc3333;
+      --cinema-gold: #f4c22d;
+      --cinema-olive: #c3b357;
+      --white: #ffffff;
+      --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      --card-shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.2);
+      --glow-orange: 0 0 30px rgba(245, 116, 32, 0.4);
+      --glow-gold: 0 0 20px rgba(244, 194, 45, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-image: url("/images/bb.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      padding: 80px 0 40px;
+      color: #f0f4f8;
+    }
+
+    /* Header */
+    .page-header {
+      text-align: center;
+      color: var(--white);
+      margin-bottom: 35px;
+      /* padding: 20px 15px; */
+    }
+
+    .page-header .header-icon {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .page-header .header-icon i {
+      font-size: 28px;
+    }
+
+    .page-header h1 {
+      font-family: Monoton;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 500;
+      word-spacing: 8px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .page-header p {
+      font-family: cookie;
+      font-size: 2.1rem;
+      opacity: 0.9;
+    }
+
+    /* Form Container */
+    .form-container {
+      max-width: 900px;
+      margin: 0 auto;
+     background: rgba(255, 255, 255, 0.08);
+            padding: 40px 50px;
+            border: 2px solid #f98383;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+            backdrop-filter: blur(10px);
+      padding: clamp(25px, 5vw, 45px);
+      
+      transition: all 0.3s ease;
+    }
+
+    .form-container:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-3px);
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .form-header h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .form-header p {
+      color: #cbd5e1;
+      font-size: 1rem;
+    }
+
+    .form-header .divider {
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(135deg, var(--cinema-gold) 0%, var(--cinema-olive) 100%);
+      margin: 20px auto 0;
+      border-radius: 2px;
+    }
+
+    /* Form Labels */
+    .form-label {
+      font-weight: 500;
+      color: #ffffff;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-label i {
+      color: rgb(0, 166, 255);
+      font-size: 1rem;
+    }
+
+    .form-label .required {
+      color: var(--cinema-red);
+      font-weight: 600;
+    }
+
+    /* Form Controls */
+    .form-control,
+    .form-select {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--cinema-orange);
+      box-shadow: 0 0 0 4px rgba(245, 116, 32, 0.1);
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .form-control::placeholder {
+      color: #94a3b8;
+    }
+
+    /* Select2 Custom Styling */
+    .select2-container--default .select2-selection--multiple {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 8px 12px;
+      min-height: 50px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+      border-color: var(--cinema-orange);
+      box-shadow: 0 0 0 4px rgba(245, 116, 32, 0.1);
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background: linear-gradient(135deg, var(--cinema-orange) 0%, var(--cinema-red) 100%);
+      border: none;
+      color: var(--white);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.85rem;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+      color: var(--white);
+      margin-right: 6px;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+      color: #ffcccb;
+      background: transparent;
+    }
+
+    /* Section Divider */
+    .section-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cinema-gold), transparent);
+      margin: 30px 0;
+      opacity: 0.5;
+    }
+
+    /* Character Counter */
+    .char-counter {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      text-align: right;
+      margin-top: 5px;
+    }
+
+    .char-counter.warning {
+      color: var(--cinema-red);
+    }
+
+    /* Image Upload Area */
+    .upload-area {
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    }
+
+    .upload-area:hover {
+      border-color: var(--cinema-orange);
+      background: linear-gradient(135deg, rgba(245, 116, 32, 0.1) 0%, rgba(245, 116, 32, 0.05) 100%);
+    }
+
+    .upload-area .upload-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, purple 0%, var(--cinema-red) 100%);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      box-shadow: var(--glow-orange);
+    }
+
+    .upload-area .upload-icon i {
+      font-size: 28px;
+      color: var(--white);
+    }
+
+    .upload-area p {
+      color: #cbd5e1;
+      margin-bottom: 5px;
+    }
+
+    .upload-area .upload-hint {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    /* Image Preview */
+    .image-preview-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .image-preview-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .image-preview-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .image-preview-card .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .image-preview-card:hover .overlay {
+      opacity: 1;
+    }
+
+    .image-preview-card .overlay .btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Buttons */
+    .btn-cinema-primary {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+      border: none;
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: var(--glow-orange);
+      transition: all 0.3s ease;
+    }
+
+    .btn-cinema-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 116, 32, 0.5);
+      color: var(--white);
+    }
+
+    .btn-cinema-secondary {
+      background: transparent;
+      border: 2px solid #fcd810;
+      color: #fcd810;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cinema-secondary:hover {
+      background-color: rgb(247, 137, 3);
+      color: var(--white);
+    }
+
+    .btn-cinema-gold {
+      background: linear-gradient(135deg, var(--cinema-gold) 0%, var(--cinema-olive) 100%);
+      border: none;
+      color: #1a1a2e;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 500;
+      box-shadow: var(--glow-gold);
+      transition: all 0.3s ease;
+    }
+
+    .btn-cinema-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 194, 45, 0.5);
+    }
+
+    /* Error Messages */
+    .text-danger {
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    /* Crop Modal */
+    .modal-content {
+      border-radius: 20px;
+      border: none;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--cinema-orange) 0%, var(--cinema-red) 100%);
+      color: var(--white);
+      border: none;
+      padding: 18px 24px;
+    }
+
+    .modal-header .btn-close {
+      filter: brightness(0) invert(1);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-footer {
+      border-top: 1px solid #e2e8f0;
+      padding: 16px 24px;
+    }
+
+    /* Crop Controls */
+    .crop-controls {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .ratio-btn {
+      border: 2px solid #e2e8f0;
+      background: var(--white);
+      color: #64748b;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .ratio-btn:hover,
+    .ratio-btn.active {
+      border-color: var(--cinema-orange);
+      color: var(--cinema-orange);
+      background: #fff7ed;
+    }
+
+    .ratio-btn.active {
+      background: linear-gradient(135deg, var(--cinema-orange) 0%, var(--cinema-red) 100%);
+      color: var(--white);
+      border-color: transparent;
+    }
+
+    /* Duplicate Modal */
+    #movieExistsModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+
+    #movieExistsModal .modal-content {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 24px;
+      text-align: center;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    #movieExistsModal .warning-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    #movieExistsModal .warning-icon i {
+      font-size: 40px;
+      color: var(--cinema-red);
+    }
+
+    /* Footer */
+    .page-footer {
+      text-align: center;
+      margin-top: 40px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+    }
+
+    /* Container background fix */
+    .container-fluid {
+      background-color: transparent !important;
+    }
+
+    /* SIDEBAR DESKTOP */
+    :root {
+      --sidebar-width: 250px;
+      --primary-bg: #1d000a;
+      --sidebar-bg: rgba(199, 188, 191, 0.21);
+      --sidebar-border: #eb2d5d;
+    }
+
+    /* SIDEBAR DESKTOP */
+        :root {
+            --sidebar-width: 250px;
+            --primary-bg: #1d000a;
+            --sidebar-bg: rgba(199, 188, 191, 0.21);
+            --sidebar-border: #eb2d5d;
+        }
+
+        .layout {
+            display: flex;
+            gap: 18px;
+        }
+
+        .sidebar {
+            color: #ffffff;
+            width: 250px;
+            margin-top: 10px;
+            background: linear-gradient(145deg, rgba(102, 145, 160, 0.4), rgba(125, 1, 34, 0.522));
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--sidebar-border);
+            padding: 20px;
+            height: calc(100vh - 100px);
+            border-radius: 12px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+            position: sticky;
+            top: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar nav a i {
+            margin-right: 8px;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(250, 234, 238, 0.3);
+            color: #fff;
+            text-shadow: 0 0 8px #ff0080;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 18px;
+            background-color: transparent;
+        }
+
+        .sidebar .rounded-circle {
+            border: 2px solid var(--accent);
+            padding: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(245, 103, 138, 0.6);
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .rounded-circle:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(235, 45, 93, 1);
+        }
+
+        .sidebar h6 {
+            color: #ffffff !important;
+            text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8); }
+            50% { text-shadow: 0 2px 25px rgba(235, 45, 93, 1); }
+        }
+
+        /* Text Colors */
+        .text-light {
+            color: #ffffff !important;
+        }
+
+        /* Mobile Sidebar */
+        /* Mobile Sidebar */
+        @media (max-width: 991px) {
+            .sidebar {
+                position: fixed;
+                top: 120px;
+                left: 0;
+                width: 200px;
+                height: calc(100vh - 140px);
+                background: linear-gradient(145deg, #7917307b, rgba(106, 11, 36, 0.314));
+                backdrop-filter: blur(10px);
+                z-index: 9999;
+                transform: translateX(-200px);
+                transition: transform 0.35s ease;
+                border-radius: 0 14px 14px 0;
+                box-shadow: 6px 0 20px rgba(0, 0, 0, 0.5);
+            }
+            /* Thin visible strip */
+            .sidebar::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                right: -10px;
+                width: 10px;
+                height: 100%;
+                background: linear-gradient(145deg, #79172f, rgba(106, 11, 36, 0.95));
+                border-radius: 0 10px 10px 0;
+                cursor: pointer;
+            }
+
+
+            /* Open on hover/touch */
+            .sidebar:hover,
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .layout {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .sidebar {
+                top: 90px;
+            }
+        }
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 100px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(235, 45, 93, 0.8);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar-toggle-btn:hover {
+            background: rgba(235, 45, 93, 1);
+        }
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding-top: 70px;
+      }
+
+      .sidebar {
+        top: 90px;
+      }
+
+      .main-content {
+        padding: 10px;
+      }
+
+      .image-preview-card img {
+        height: 120px;
+      }
+
+      .btn-container {
+        flex-direction: column;
+      }
+
+      .crop-controls {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .form-container {
+        width: 100%;
+        max-width: none;
+        padding: 20px 15px;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .form-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .row .col-md-6, .row .col-md-4 {
+        margin-bottom: 20px;
+      }
+
+      .upload-area {
+        padding: 30px 15px;
+      }
+
+      .previewContainer .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+      }
+
+      .btn-container {
+        gap: 10px;
+      }
+
+      .modal-dialog {
+        margin: 10px;
+      }
+    }
+
+    /* Fullscreen Overlay */
+    #successAnimation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+    }
+
+    /* Popup Box */
+    #successAnimation .popup-box {
+      background: #ffffff;
+      padding: 35px 40px;
+      border-radius: 20px;
+      text-align: center;
+      width: 380px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+      animation: popupFadeIn 0.35s ease-out;
+    }
+
+    /* Lottie Animation */
+    #successAnimation .lottie {
+      width: 260px;
+      height: 260px;
+      margin-bottom: 10px;
+    }
+
+    /* Title Text */
+    #successAnimation h3 {
+      color: #ff4081;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    /* Subtext */
+    #successAnimation p {
+      color: #444;
+      margin-bottom: 20px;
+    }
+
+    /* Close Button */
+    #successAnimation .closeBtn {
+      padding: 10px 22px;
+      background: #ff4081;
+      color: white;
+      border: none;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    #successAnimation .closeBtn:hover {
+      background: #e0356f;
+      transform: scale(1.05);
+    }
+
+    @keyframes popupFadeIn {
+      0% {
+        transform: scale(0.7);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+      .back-btn-6 {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid #00d9ff;
+            color: #00d9ff;
+            padding: 0.9rem 2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3),
+                        inset 0 0 10px rgba(0, 217, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
+
+        .back-btn-6:hover {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00ffff;
+            color: #00ffff;
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(0, 217, 255, 0.6),
+                        inset 0 0 20px rgba(0, 217, 255, 0.2);
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
+        }
+
+        .back-btn-6 i {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 0 5px rgba(0, 217, 255, 0.5));
+        }
+
+        .back-btn-6:hover i {
+            transform: translateX(-5px);
+        }
+  </style>
+</head>
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: nav(activePage='dashboard')}"></div>
+
+<body>
+
+
+  <!--SIDEBAR-->
+  <div class="container-fluid">
+    <div class="layout">
+
+      <!-- SIDEBAR -->
+      <aside id="sidebar" class="sidebar mb-3">
+        <div class="text-center mb-4" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+          <a th:href="@{/profile}">
+            <img th:src="${photo != null} ? 'data:image/jpeg;base64,' + ${photo} : @{/images/default.png}"
+                 alt="Profile Picture" width="50" height="50" class="rounded-circle" />
+          </a>
+          <h6 style="font-family: 'Poppins', sans-serif; color: #ffffff; margin-top: 0;" th:text="${username}">Admin</h6>
+          <!-- <h5 style="font-family: 'Cookie', cursive; color: #ffffff; margin-top: 5px;">Kaisi Lagi</h5> -->
+        </div>
+        <nav>
+          <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+          <a class="active" th:href="@{/moviedelete}" th:classappend="${activePage == 'moviedelete'} ? 'active' : ''">
+            <i class="bi bi-camera-reels-fill"></i> All Movies
+          </a>
+          <a th:href="@{/showpeople}" th:classappend="${activePage == 'showpeople'} ? 'active' : ''">
+            <i class="bi bi-people-fill"></i> All Crew
+          </a>
+          <a th:href="@{/users}" th:classappend="${activePage == 'makeAdmin'} ? 'active' : ''">
+            <i class="bi bi-person-workspace"></i> Create Admin
+          </a>
+          <a th:href="@{/block-users}" th:classappend="${activePage == 'blockUser'} ? 'active' : ''">
+            <i class="bi bi-person-fill-gear"></i> All Users
+          </a>
+          <a th:href="@{/ShowReports}" th:classappend="${activePage == 'ShowReports'} ? 'active' : ''">
+            <i class="bi bi-bar-chart-fill"></i> All Reports
+          </a>
+          <a th:href="@{/list}" th:classappend="${activePage == 'badgelist'} ? 'active' : ''">
+            <i class="bi bi-award-fill"></i>Badges
+          </a>
+          <a th:href="@{/logout}">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </a>
+        </nav>
+      </aside>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="page-header">
+<!--      <div class="header-icon"></div>-->
+      <h1>Movie Management System</h1>
+      <p>Add new movies to your collection</p>
+    </header>
+
+    <!-- Form Container -->
+    <div class="form-container">
+      <div class="form-header">
+        <h2>Add New Movie</h2>
+        <p>Fill in the details below to add a movie to the database</p>
+        <div class="divider"></div>
+      </div>
+
+      <!-- Duplicate Movie Modal -->
+      <div id="movieExistsModal" class="d-none">
+        <div class="modal-content">
+          <div class="warning-icon">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <h4 class="mb-3">Movie Already Exists!</h4>
+          <p id="movieExistsText" class="text-muted"></p>
+          <div class="d-flex justify-content-center mt-4 gap-3">
+            <button id="confirmAddBtn" class="btn btn-cinema-gold">
+              <i class="bi bi-check-circle me-2"></i>Add Anyway
+            </button>
+            <button id="cancelAddBtn" class="btn btn-cinema-secondary">
+              <i class="bi bi-x-circle me-2"></i>Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <form id="movieForm" th:action="@{/saveMovie}" th:object="${movie}" method="post" enctype="multipart/form-data"
+        novalidate>
+
+        <!-- Movie Title -->
+        <div class="mb-4">
+          <label for="movieName" class="form-label">
+            <i class="bi bi-film"></i> Movie Title <span class="required">*</span>
+          </label>
+          <input type="text" th:field="*{movieName}" class="form-control" id="movieName" placeholder="Enter movie title"
+            required>
+          <div class="text-danger" id="movieNameError"></div>
+        </div>
+
+        <!-- Language & Genre Row -->
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <label for="language" class="form-label">
+              <i class="bi bi-translate"></i> Language <span class="required">*</span>
+            </label>
+            <select th:field="*{language}" class="form-select select2-multiple" id="language" multiple="multiple"
+              required>
+            </select>
+            <div class="text-danger" id="languageError"></div>
+          </div>
+
+          <div class="col-md-6 mb-4">
+            <label for="genre" class="form-label">
+              <i class="bi bi-tags"></i> Genre <span class="required">*</span>
+            </label>
+            <select th:field="*{genre}" class="form-select select2-multiple" id="genre" multiple="multiple" required>
+            </select>
+            <div class="text-danger" id="genreError"></div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-4">
+          <label for="description" class="form-label">
+            <i class="bi bi-file-text"></i> Description <span class="required">*</span>
+          </label>
+          <textarea th:field="*{description}" class="form-control" id="description" rows="4"
+            placeholder="Enter movie description..." required></textarea>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="text-danger" id="descriptionError"></div>
+            <div class="char-counter" id="descCount">0 / 500 characters</div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Release Date, Duration & Category Row -->
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <label for="releaseDate" class="form-label">
+              <i class="bi bi-calendar-event"></i> Release Date
+            </label>
+            <input type="date" th:field="*{releaseDate}" class="form-control" id="releaseDate">
+            <div class="text-danger" id="releaseDateError"></div>
+          </div>
+
+          <div class="col-md-4 mb-4">
+            <label for="duration" class="form-label">
+              <i class="bi bi-clock"></i> Duration (mins) <span class="required">*</span>
+            </label>
+            <input type="number" th:field="*{duration}" class="form-control" id="duration" min="1"
+              placeholder="e.g., 120" required>
+            <div class="text-danger" id="durationError"></div>
+          </div>
+
+          <div class="col-md-4 mb-4">
+            <label for="category" class="form-label">
+              <i class="bi bi-bookmark"></i> Category <span class="required">*</span>
+            </label>
+            <select name="categoryId" class="form-select" id="category" required>
+              <option value="">Select category</option>
+              <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+            </select>
+            <div class="text-danger" id="categoryError"></div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Upload Images -->
+        <div class="mb-4">
+          <label class="form-label">
+            <i class="bi bi-images"></i> Upload Images <span class="required">*</span>
+          </label>
+          <div class="upload-area" onclick="document.getElementById('images').click()">
+            <input type="file" name="veers" class="d-none" id="images" multiple accept="image/*">
+            <div class="upload-icon">
+              <i class="bi bi-cloud-arrow-up"></i>
+            </div>
+            <p class="mb-1">Click to upload or drag and drop</p>
+            <span class="upload-hint">PNG, JPG, GIF up to 10MB each</span>
+          </div>
+          <div class="text-danger" id="imagesError"></div>
+          <small class="text-light d-block mt-2">
+            <i class="bi bi-info-circle me-1"></i>
+            Click a preview image to crop. Presets: Poster (2:3), Square (1:1), Banner (16:9)
+          </small>
+        </div>
+
+        <!-- Trailer URL -->
+        <div class="mb-4">
+          <label for="trailer" class="form-label">
+            <i class="bi bi-play-circle"></i> Trailer URL
+          </label>
+          <input type="url" name="url" class="form-control" id="trailer" placeholder="Enter trailer URL (optional)">
+        </div>
+
+        <!-- Image Preview -->
+        <div id="previewContainer" class="row g-3 mb-4"></div>
+
+        <!-- Buttons -->
+        <div class="btn-container d-flex gap-3 flex-wrap">
+          <button type="button" id="removeAllBtn" class="btn btn-cinema-secondary flex-fill">
+            <i class="bi bi-trash me-2"></i>Remove All Images
+          </button>
+          <button type="submit" class="btn btn-cinema-primary flex-fill" onclick="checkMovieBeforeSave(event)">
+            <i class="bi bi-save me-2"></i>Save Movie
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <p>© 2025 Movie Management System. All rights reserved.</p>
+    </footer>
+
+  </main>
+  </div>
+
+  <!-- Crop Modal -->
+  <div class="modal fade" id="cropModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-crop me-2"></i>Crop Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex gap-3 flex-column">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+              <div class="crop-controls">
+                <div class="btn-group me-2" role="group">
+                  <button class="btn ratio-btn" data-ratio="16/9">16:9</button>
+                  <button class="btn ratio-btn" data-ratio="1/1">1:1</button>
+                  <button class="btn ratio-btn" data-ratio="2/3">2:3</button>
+                  <button class="btn ratio-btn active" data-ratio="free">Free</button>
+                </div>
+
+                <button class="btn btn-cinema-gold" id="rotateLeft" title="Rotate left">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+                <button class="btn btn-cinema-gold" id="rotateRight" title="Rotate right">
+                  <i class="bi bi-arrow-clockwise"></i>
+                </button>
+                <button class="btn btn-cinema-gold" id="resetCrop" title="Reset">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                </button>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <label class="mb-0 fw-medium">Zoom</label>
+                <input id="zoomRange" type="range" min="0.1" max="3" step="0.01" value="1" class="form-range"
+                  style="width: 140px;">
+              </div>
+            </div>
+
+            <div style="min-height: 400px; background: #f1f5f9; border-radius: 12px; padding: 10px;">
+              <img id="cropImage" style="max-width: 100%; display: block; margin: 0 auto; max-height: 500px;" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="applyCrop" class="btn btn-cinema-primary">
+            <i class="bi bi-check-lg me-2"></i>Apply Crop
+          </button>
+          <button type="button" class="btn btn-cinema-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="successAnimation" th:if="${success}" style="position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.5); display:flex; justify-content:center;
+            align-items:center; z-index:9999;">
+
+    <div style="background: white; padding: 30px; border-radius: 20px; text-align:center;
+                box-shadow: 0 0 20px rgba(0,0,0,0.3);">
+
+      <dotlottie-wc src="/images/animation/Success.lottie" style="width: 300px;height: 300px" autoplay>
+      </dotlottie-wc>
+
+      <h3 style="color:#ff4081;">Movie Added Successfully!</h3>
+      <button class="closeBtn" th:onclick="'closeSuccessAnimation(' + ${movie.movieId} + ')'" style="padding: 8px 16px; background-color:#ff4081; color:white;
+               border:none; border-radius:8px; cursor:pointer;">
+        Close
+      </button>
+    </div>
+  </div>
+  </div>
+
+
+  <script>
+    // function closeSuccessAnimation(movieId) {
+    // document.getElementById("successAnimation").style.display = "none";
+
+    // Redirect to addCast/{movieId}
+    // window.location.href = "/addCast/" + movieId;
+    //}
+  </script>
+
+  <!-- Libraries -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js"></script>
+
+  <script>
+    /* ------------- Initialization ------------- */
+    $(document).ready(function () {
+      $('.select2-multiple').select2({
+        placeholder: "Select options",
+        allowClear: true,
+        width: '100%',
+        theme: 'default'
+      });
+    });
+
+    /* ------------- Form helpers & validation ------------- */
+    const movieForm = document.getElementById('movieForm');
+    const imageInput = document.getElementById('images');
+    const previewContainer = document.getElementById('previewContainer');
+    const removeAllBtn = document.getElementById('removeAllBtn');
+
+    const descriptionField = document.getElementById("description");
+    const descCount = document.getElementById("descCount");
+    descriptionField.addEventListener("input", function () {
+      const length = this.value.length;
+      descCount.textContent = `${length} / 500 characters`;
+      descCount.classList.toggle('warning', length > 500);
+    });
+
+    /* ------------- Cropping state ------------- */
+    let selectedFiles = [];
+    let cropper = null;
+    let currentIndex = null;
+
+    /* ------------- Update preview grid ------------- */
+    function updatePreview() {
+      previewContainer.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const col = document.createElement('div');
+          col.className = 'col-6 col-md-3';
+          col.innerHTML = `
+              <div class="image-preview-card">
+                  <img src="${e.target.result}" data-index="${index}" />
+                  <div class="overlay">
+                      <button class="btn btn-cinema-gold crop-btn" data-index="${index}" title="Crop">
+                          <i class="bi bi-crop"></i>
+                      </button>
+                      <button class="btn btn-danger remove-btn" data-index="${index}" title="Remove">
+                          <i class="bi bi-trash"></i>
+                      </button>
+                  </div>
+              </div>
+          `;
+          previewContainer.appendChild(col);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      setTimeout(() => {
+        document.querySelectorAll('.crop-btn').forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            openCropper(parseInt(e.currentTarget.dataset.index, 10));
+          };
+        });
+        document.querySelectorAll('.image-preview-card img').forEach(img => {
+          img.onclick = (e) => openCropper(parseInt(e.currentTarget.dataset.index, 10));
+        });
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const i = parseInt(e.currentTarget.dataset.index, 10);
+            selectedFiles.splice(i, 1);
+            const dt = new DataTransfer();
+            selectedFiles.forEach(f => dt.items.add(f));
+            imageInput.files = dt.files;
+            updatePreview();
+          };
+        });
+      }, 100);
+    }
+
+    /* ------------- File selection ------------- */
+    imageInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files || []);
+      selectedFiles = files.slice();
+      updatePreview();
+    });
+
+    /* ------------- Remove all images ------------- */
+    removeAllBtn.addEventListener('click', () => {
+      selectedFiles = [];
+      imageInput.value = '';
+      previewContainer.innerHTML = '';
+    });
+
+    /* ------------- Cropper modal logic ------------- */
+    const cropModalEl = document.getElementById('cropModal');
+    const cropImageEl = document.getElementById('cropImage');
+    const applyCropBtn = document.getElementById('applyCrop');
+    const rotateLeftBtn = document.getElementById('rotateLeft');
+    const rotateRightBtn = document.getElementById('rotateRight');
+    const resetCropBtn = document.getElementById('resetCrop');
+    const zoomRange = document.getElementById('zoomRange');
+    const ratioButtons = document.querySelectorAll('.ratio-btn');
+
+    let bootstrapCropModal = new bootstrap.Modal(cropModalEl, { keyboard: false, backdrop: 'static' });
+
+    function openCropper(index) {
+      currentIndex = index;
+      const file = selectedFiles[index];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        cropImageEl.src = ev.target.result;
+
+        if (cropper) { cropper.destroy(); cropper = null; }
+
+        bootstrapCropModal.show();
+        setTimeout(() => {
+          cropper = new Cropper(cropImageEl, {
+            viewMode: 1,
+            autoCropArea: 1,
+            background: false,
+            responsive: true,
+            zoomOnWheel: true,
+          });
+          zoomRange.value = 1;
+          ratioButtons.forEach(b => b.classList.remove('active'));
+          document.querySelector('.ratio-btn[data-ratio="free"]').classList.add('active');
+        }, 200);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* Ratio buttons */
+    ratioButtons.forEach(btn => {
+      btn.addEventListener('click', function () {
+        ratioButtons.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const ratio = this.getAttribute('data-ratio');
+        if (!cropper) return;
+
+        if (ratio === 'free') {
+          cropper.setAspectRatio(NaN);
+        } else {
+          const parts = ratio.split('/');
+          const r = Number(parts[0]) / Number(parts[1]);
+          cropper.setAspectRatio(r);
+        }
+      });
+    });
+
+    /* Rotation */
+    rotateLeftBtn.addEventListener('click', () => { if (cropper) cropper.rotate(-90); });
+    rotateRightBtn.addEventListener('click', () => { if (cropper) cropper.rotate(90); });
+    resetCropBtn.addEventListener('click', () => { if (cropper) { cropper.reset(); zoomRange.value = 1; } });
+
+    /* Zoom slider */
+    zoomRange.addEventListener('input', function () {
+      const val = parseFloat(this.value);
+      if (cropper) cropper.zoomTo(val);
+    });
+
+    /* Apply crop */
+    applyCropBtn.addEventListener('click', function () {
+      if (!cropper || currentIndex === null) return;
+
+      const canvas = cropper.getCroppedCanvas({});
+
+      if (!canvas) {
+        alert('Unable to crop image.');
+        return;
+      }
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+
+        const originalName = selectedFiles[currentIndex].name || `image_${Date.now()}.jpg`;
+        const croppedFile = new File([blob], originalName, { type: blob.type || 'image/jpeg', lastModified: Date.now() });
+
+        selectedFiles[currentIndex] = croppedFile;
+
+        const dt = new DataTransfer();
+        selectedFiles.forEach(f => dt.items.add(f));
+        imageInput.files = dt.files;
+
+        updatePreview();
+        bootstrapCropModal.hide();
+        cropper.destroy();
+        cropper = null;
+      }, 'image/jpeg', 0.92);
+    });
+
+    /* Cleanup when modal closed */
+    cropModalEl.addEventListener('hidden.bs.modal', function () {
+      if (cropper) { cropper.destroy(); cropper = null; }
+      currentIndex = null;
+    });
+
+    /* ------------- Duplicate check + submit ------------- */
+    function showDuplicateModal(releaseDateText) {
+      const modal = document.getElementById("movieExistsModal");
+      modal.classList.remove("d-none");
+      modal.style.display = "flex";
+      document.getElementById("movieExistsText").innerText = releaseDateText || '';
+    }
+
+    document.getElementById("confirmAddBtn").addEventListener('click', function () {
+      const modal = document.getElementById("movieExistsModal");
+      modal.style.display = "none";
+      modal.classList.add("d-none");
+      movieForm.submit();
+    });
+
+    document.getElementById("cancelAddBtn").addEventListener('click', function () {
+      const modal = document.getElementById("movieExistsModal");
+      modal.style.display = "none";
+      modal.classList.add("d-none");
+    });
+
+    /* ---------------- Validation + Duplicate Check ---------------- */
+    function checkMovieBeforeSave(event) {
+      event.preventDefault();
+      let valid = true;
+
+      document.querySelectorAll(".text-danger").forEach(e => e.innerText = "");
+
+      const movieName = document.getElementById("movieName").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const releaseDate = document.getElementById("releaseDate").value;
+      const duration = document.getElementById("duration").value;
+      const language = $('#language').val();
+      const genre = $('#genre').val();
+      const category = document.getElementById("category").value;
+      const images = imageInput.files;
+
+      if (movieName === "") { valid = false; document.getElementById("movieNameError").innerText = "Movie name is required!"; }
+      if (description === "") { valid = false; document.getElementById("descriptionError").innerText = "Description cannot be empty!"; }
+      else if (description.length < 10) { valid = false; document.getElementById("descriptionError").innerText = "Description must be at least 10 characters!"; }
+      else if (description.length > 500) { valid = false; document.getElementById("descriptionError").innerText = "Description cannot exceed 500 characters!"; }
+
+      if (!releaseDate) { valid = false; document.getElementById("releaseDateError").innerText = "Release date is required!"; }
+      else {
+        const today = new Date(); const inputDate = new Date(releaseDate);
+        if (inputDate > today) { valid = false; document.getElementById("releaseDateError").innerText = "Release date cannot be in the future!"; }
+      }
+
+      if (!duration || duration <= 0) { valid = false; document.getElementById("durationError").innerText = "Duration must be a positive number!"; }
+      if (!language || language.length === 0) { valid = false; document.getElementById("languageError").innerText = "Select at least one language!"; }
+      if (!genre || genre.length === 0) { valid = false; document.getElementById("genreError").innerText = "Select at least one genre!"; }
+      if (!category) { valid = false; document.getElementById("categoryError").innerText = "Please select a category!"; }
+      if (!images || images.length === 0) { valid = false; document.getElementById("imagesError").innerText = "Upload at least one image!"; }
+
+      if (!valid) return;
+
+      // Duplicate check
+      fetch(`/checkMovie?movieName=` + encodeURIComponent(movieName))
+        .then(res => res.json())
+        .then(data => {
+          if (data.exists) {
+            showDuplicateModal(`Movie already exists with release date: ${data.releaseDate}. Do you want to add it again?`);
+          } else {
+            // If movie does not exist, submit normally
+            movieForm.submit();
+          }
+        })
+        .catch(err => {
+          console.error('Error checking movie:', err);
+          movieForm.submit();
+        });
+    }
+
+    // Submit listener
+    movieForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      checkMovieBeforeSave(e);
+    });
+  </script>
+  <script>
+    const languages = [
+      "English", "Hindi", "Tamil", "Telugu", "Malayalam", "Kannada", "Bengali", "Marathi",
+      "Punjabi", "Gujarati", "Odia", "Assamese", "Urdu", "Korean", "Japanese", "French",
+      "Spanish", "German", "Chinese", "Other"
+    ];
+
+    const genres = [
+      "Action", "Adventure", "Thriller", "Crime", "Comedy", "Romance", "Drama", "Sci-Fi",
+      "Fantasy", "Horror", "Mystery", "Documentary", "Animation", "Biography", "Sports",
+      "Family", "Musical", "War", "Western", "Short Film"
+    ];
+
+    function populateOptions(selectId, list) {
+      const select = document.getElementById(selectId);
+      list.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item;
+        option.textContent = item;
+        select.appendChild(option);
+      });
+    }
+
+    populateOptions("language", languages);
+    populateOptions("genre", genres);
+    // Mobile Sidebar Functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        function isMobile() {
+            return window.innerWidth < 992;
+        }
+
+        // Toggle on button click
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        // Close when touching outside
+        document.addEventListener('touchstart', function (e) {
+            if (!isMobile()) return;
+            if (!sidebar.contains(e.target) && e.target !== sidebarToggle) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Reset when back to desktop
+        window.addEventListener('resize', function () {
+            if (!isMobile()) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+  </script>
+
+
+</body>
+
+</html>

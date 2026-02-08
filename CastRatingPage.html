@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate the Cast - KAISI LAGI</title>
+    <!-- sweetalert -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+   }
+
+   body::before {
+       content: '';
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       background:
+           radial-gradient(circle at 20% 50%, rgba(203, 3, 80, 0.05) 0%, transparent 50%),
+           radial-gradient(circle at 80% 80%, rgba(118, 3, 19, 0.03) 0%, transparent 50%);
+       z-index: -1;
+       pointer-events: none;
+   }
+
+   body {
+       background-image: url("/images/bb.jpeg");
+       background-size: cover;
+       background-position: center;
+       background-repeat: no-repeat;
+       background-attachment: fixed;
+       font-family: 'Poppins', sans-serif;
+       min-height: 100vh;
+       padding-bottom: 3rem;
+       padding-top: 90px;
+   }
+
+   .navbar {
+       background: rgba(31, 31, 31, 0.95);
+       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+       backdrop-filter: blur(10px);
+       padding: 1rem 2rem;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+       position: fixed;
+       top: 0;
+       left: 0;
+       right: 0;
+       z-index: 100;
+   }
+
+   .logo {
+       font-size: 1.8rem;
+       font-weight: bold;
+       background: linear-gradient(135deg, #e80266 0%, #760313 100%);
+       -webkit-background-clip: text;
+       -webkit-text-fill-color: transparent;
+       background-clip: text;
+   }
+
+   .nav-links {
+       display: flex;
+       gap: 2rem;
+   }
+
+   .nav-links a {
+       color: #fff;
+       text-decoration: none;
+       transition: color 0.3s;
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .nav-links a:hover {
+       color: #cb0350;
+   }
+
+   .container {
+       width: 50vw !important;
+       max-width: 50vw !important;
+       margin: 2rem auto !important;
+       padding: 0 1rem;
+       display: flex;
+       justify-content: center;
+       align-items: flex-start;
+   }
+
+   .content-card {
+       background: #ffffff;
+       border-radius: 20px;
+       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+       padding: 2rem;
+       width: 100%;
+       max-width: 100%;
+   }
+
+   .page-header {
+       text-align: center;
+       margin-bottom: 3rem;
+   }
+
+   .rate-label {
+       background: linear-gradient(135deg, #e80266 0%, #760313 100%);
+       -webkit-background-clip: text;
+       -webkit-text-fill-color: transparent;
+       background-clip: text;
+       font-size: 0.9rem;
+       font-weight: 700;
+       letter-spacing: 3px;
+       margin-bottom: 1rem;
+   }
+
+   .movie-title {
+       font-size: 2.2rem;
+       background: linear-gradient(135deg, #cb0350 0%, #010003 100%);
+       -webkit-background-clip: text;
+       -webkit-text-fill-color: transparent;
+       background-clip: text;
+       margin-bottom: 0.5rem;
+       font-weight: 700;
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .subtitle {
+       color: #666;
+       font-size: 0.95rem;
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .category-section {
+       margin-bottom: 2.5rem;
+   }
+
+   .category-title {
+       font-size: 1.3rem;
+       color: #cb0350;
+       border-left: 4px solid #cb0350;
+       margin-bottom: 1.5rem;
+       padding-left: 1rem;
+       font-weight: 700;
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .cast-card {
+       background: #fafafa;
+       border: 2px solid #e0e0e0;
+       border-radius: 15px;
+       padding: 1.5rem;
+       margin-bottom: 1.2rem;
+       transition: all 0.3s ease;
+   }
+
+   .cast-card:hover {
+       background: #f9f9f9;
+       border-color: #cb0350;
+       box-shadow: 0 8px 25px rgba(203, 3, 80, 0.2);
+   }
+
+   .cast-header {
+       display: flex;
+       align-items: center;
+       gap: 1rem;
+       margin-bottom: 1.2rem;
+   }
+
+   .cast-photo {
+       width: 60px;
+       height: 60px;
+       border-radius: 50%;
+       background: linear-gradient(135deg, #e80266 0%, #760313 100%);
+       box-shadow: 0 4px 15px rgba(232, 2, 102, 0.4);
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-size: 1.4rem;
+       font-weight: bold;
+       color: white;
+       flex-shrink: 0;
+       position: relative;
+       overflow: hidden;
+   }
+
+   .cast-photo img {
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+       border-radius: 50%;
+       position: absolute;
+       top: 0;
+       left: 0;
+   }
+
+   .cast-photo .initials {
+       position: relative;
+       z-index: 1;
+   }
+
+   .cast-info {
+       flex: 1;
+       min-width: 0;
+   }
+
+   .cast-name {
+       font-size: 1.15rem;
+       font-weight: 700;
+       margin-bottom: 0.2rem;
+       color: #1f1f1f;
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .cast-role {
+       color: #666;
+       font-size: 0.85rem;
+       margin-bottom: 0.3rem;
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .current-rating {
+       color: #cb0350;
+       font-size: 0.8rem;
+       font-weight: 600;
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .star-rating-container {
+       display: flex;
+       gap: 0.25rem;
+       justify-content: center;
+   }
+
+   .star-btn {
+       background: transparent;
+       border: none;
+       cursor: pointer;
+       padding: 0;
+       transition: transform 0.2s;
+   }
+
+   .star-btn:hover {
+       transform: scale(1.15);
+   }
+
+   .star-btn svg {
+       width: 32px;
+       height: 32px;
+       fill: rgba(0, 0, 0, 0.1);
+       transition: all 0.2s;
+   }
+
+   .star-btn.filled svg {
+       fill: url(#starGradient);
+       filter: drop-shadow(0 2px 8px rgba(232, 2, 102, 0.5));
+   }
+
+   .submit-section {
+       position: sticky;
+       bottom: 0;
+       background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.98) 100%);
+       padding: 2rem 0 1rem;
+       margin-top: 3rem;
+       border-top: 2px solid #e0e0e0;
+       text-align: center;
+   }
+
+   .submit-btn {
+       background: linear-gradient(135deg, #e80266 0%, #760313 100%);
+       color: #ffffff;
+       border: none;
+       padding: 1.1rem 2.5rem;
+       border-radius: 30px;
+       font-size: 1rem;
+       font-weight: 700;
+       cursor: pointer;
+       width: 100%;
+       max-width: 350px;
+       transition: all 0.3s ease;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       box-shadow: 0 4px 15px rgba(232, 2, 102, 0.4);
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .submit-btn:hover {
+       transform: translateY(-2px) scale(1.05);
+       box-shadow: 0 6px 20px rgba(232, 2, 102, 0.6);
+   }
+
+   .submit-btn:active {
+       transform: translateY(0) scale(0.98);
+   }
+
+   .submit-btn:disabled {
+       opacity: 0.5;
+       cursor: not-allowed;
+   }
+
+   .rating-count {
+       text-align: center;
+       color: #666;
+       font-size: 0.9rem;
+       margin-top: 1rem;
+       font-family: 'Poppins', sans-serif;
+   }
+
+   .rating-count span {
+       color: #cb0350;
+       font-weight: 700;
+   }
+
+   @media (max-width: 992px) {
+       body {
+           padding-top: 85px;
+       }
+
+       .container {
+           width: 70vw !important;
+           max-width: 70vw !important;
+       }
+   }
+
+   @media (max-width: 768px) {
+       body {
+           padding-top: 80px;
+       }
+
+       .container {
+           width: 90vw !important;
+           max-width: 90vw !important;
+           padding: 0 1rem;
+       }
+
+       .content-card {
+           padding: 1.5rem;
+       }
+
+       .movie-title {
+           font-size: 1.8rem;
+       }
+
+       .cast-photo {
+           width: 50px;
+           height: 50px;
+           font-size: 1.2rem;
+       }
+
+       .star-btn svg {
+           width: 28px;
+           height: 28px;
+       }
+
+       .cast-name {
+           font-size: 1rem;
+       }
+
+       .category-title {
+           font-size: 1.1rem;
+       }
+   }
+
+   @media (max-width: 480px) {
+       .container {
+           width: 95vw !important;
+           max-width: 95vw !important;
+       }
+
+       .content-card {
+           padding: 1.2rem;
+       }
+
+       .movie-title {
+           font-size: 1.6rem;
+       }
+
+       .cast-photo {
+           width: 45px;
+           height: 45px;
+           font-size: 1.1rem;
+       }
+
+       .star-btn svg {
+           width: 26px;
+           height: 26px;
+       }
+
+       .submit-btn {
+           padding: 1rem 2rem;
+           font-size: 0.9rem;
+       }
+   }
+
+        /* ===================================
+   ANCHOR TAG STYLES FOR CAST CARDS
+   =================================== */
+
+/* Remove default anchor styling */
+.cast-header a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for the entire clickable area */
+.cast-header a:hover {
+    transform: translateX(5px);
+}
+
+/* Prevent text color change on anchor */
+.cast-header a:visited,
+.cast-header a:link,
+.cast-header a:active {
+    color: inherit;
+}
+
+/* Enhanced hover effect for cast name */
+.cast-header a:hover .cast-name {
+    color: #cb0350;
+    transition: color 0.3s ease;
+}
+
+/* Subtle hover effect for photo */
+.cast-header a:hover .cast-photo {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(232, 2, 102, 0.6);
+    transition: all 0.3s ease;
+}
+
+
+/* ===================================
+   IMAGE & INITIALS DISPLAY FIX
+   =================================== */
+
+/* Cast photo container */
+.cast-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e80266 0%, #760313 100%);
+    box-shadow: 0 4px 15px rgba(232, 2, 102, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: white;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Image styling - always on top when present */
+.cast-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;  /* Higher z-index to cover initials */
+    display: block;
+}
+
+/* Initials - hidden by default when image loads */
+.cast-photo .initials {
+    position: relative;
+    z-index: 1;  /* Lower z-index, behind image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Show initials only when image fails to load */
+.cast-photo img[style*="display: none"] + .initials,
+.cast-photo img[style*="display:none"] + .initials {
+    display: flex;
+}
+
+
+/* ===================================
+   RESPONSIVE ADJUSTMENTS
+   =================================== */
+
+@media (max-width: 768px) {
+    .cast-photo {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .cast-header a:hover {
+        transform: translateX(3px);
+    }
+}
+
+@media (max-width: 480px) {
+    .cast-photo {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+
+    .cast-header a {
+        gap: 0.75rem;
+    }
+}
+
+
+/* ===================================
+   ADDITIONAL IMPROVEMENTS
+   =================================== */
+
+/* Smooth transition for all cast card elements */
+.cast-card {
+    transition: all 0.3s ease;
+}
+
+/* Focus state for accessibility */
+.cast-header a:focus {
+    outline: 2px solid #cb0350;
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* Active state feedback */
+.cast-header a:active .cast-photo {
+    transform: scale(0.95);
+}
+    </style>
+</head>
+<body>
+<nav th:replace="fragments/navbar::nav">
+
+</nav>
+
+<div class="container">
+    <div class="content-card">
+        <div class="page-header">
+            <div class="rate-label">RATE THE CAST</div>
+            <h1 class="movie-title" th:text="${movie.movieName}">Inception</h1>
+            <p class="subtitle">Share your ratings for the cast members</p>
+        </div>
+
+
+        <form method="POST" action="/CastRateSubmit" id="castRatingForm">
+            <input type="hidden" name="url" th:value="${url}">
+            <input type="hidden" name="movieId" th:value="${movie.movieId}">
+            <!-- Directors -->
+            <div class="category-section" th:if="${director != null and !director.isEmpty()}">
+                <h2 class="category-title">Directors</h2>
+                <div class="cast-card" th:each="person, iterStat : ${director}">
+                    <div class="cast-header">
+                        <a th:href="@{/people2/{id} (id= ${person.pid})}">
+                            <div class="cast-photo">
+
+
+                                <img th:if="${person.image != null}"
+                                     th:src="@{'/profile/' + ${person.pid}}"
+                                     th:alt="${person.peopleName}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                <span class="initials"
+                                      th:text="${#strings.substring(person.peopleName,0,1).toUpperCase()
+      + (person.peopleName.contains(' ') ? #strings.substring(person.peopleName.split(' ')[1],0,1).toUpperCase() : '')}">
+</span>
+
+
+                            </div>
+                            <div class="cast-info">
+                                <div class="cast-name" th:text="${person.peopleName}">Christopher Nolan</div>
+                                <div class="cast-role">Director</div>
+                                <div class="current-rating">Current Rating: <span  >8.5/10</span></div>
+                            </div>
+                        </a></div>
+                    <input type="hidden" name="peopleId[]" th:value="${person.pid}">
+                    <input type="hidden" th:name="'rating_' + ${person.pid}" th:id="'rating_' + ${person.pid}" value="0">
+                    <div class="star-rating-container" th:id="'stars_' + ${person.pid}">
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 1)'">
+                            <svg viewBox="0 0 24 24">
+                                <defs>
+                                    <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#f57420;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#cc3333;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 2)'">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 3)'">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 4)'">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 5)'">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actors -->
+            <div class="category-section" th:if="${actor != null && !actor.isEmpty()}">
+                <h2 class="category-title">Actors</h2>
+                <div class="cast-card" th:each="person, iterStat : ${actor}">
+                    <div class="cast-header">
+                        <a th:href="@{/people2/{id} (id= ${person.pid})}">
+                            <div class="cast-photo">
+
+                                <img th:if="${person.image != null}"
+                                     th:src="@{'/profile/' + ${person.pid}}"
+                                     th:alt="${person.peopleName}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                <span class="initials"
+                                      th:text="${#strings.substring(person.peopleName,0,1).toUpperCase()
+      + (person.peopleName.contains(' ') ? #strings.substring(person.peopleName.split(' ')[1],0,1).toUpperCase() : '')}">
+                            </span>
+
+                            </div>
+                            <div class="cast-info">
+                                <div class="cast-name" th:text="${person.peopleName}">Actor Name</div>
+                                <div class="cast-role">Actor</div>
+                                <div class="current-rating">Current Rating:
+                                    <span  ></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <input type="hidden" name="peopleId[]" th:value="${person.pid}">
+                    <input type="hidden" th:name="'rating_' + ${person.pid}" th:id="'rating_' + ${person.pid}" value="0">
+
+                    <!-- SVG Gradient Definition (only once) -->
+                    <svg width="0" height="0" style="position: absolute;">
+                        <defs>
+                            <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+
+                    <div class="star-rating-container" th:id="'stars_' + ${person.pid}">
+                        <button type="button" class="star-btn empty" th:onclick="|setRating(${person.pid}, 1)|">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                        <button type="button" class="star-btn empty" th:onclick="|setRating(${person.pid}, 2)|">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-btn empty" th:onclick="|setRating(${person.pid}, 3)|">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-btn empty" th:onclick="|setRating(${person.pid}, 4)|">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-btn empty" th:onclick="|setRating(${person.pid}, 5)|">
+                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actresses -->
+            <div class="category-section" th:if="${actress != null && !actress.isEmpty()}">
+                <h2 class="category-title">Actresses</h2>
+                <div class="cast-card" th:each="person, iterStat : ${actress}">
+                    <div class="cast-header">
+                        <a th:href="@{/people2/{id} (id= ${person.pid})}">
+                            <div class="cast-photo">
+
+                                <img th:if="${person.image != null}"
+                                     th:src="@{'/profile/' + ${person.pid}}"
+                                     th:alt="${person.peopleName}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                <span class="initials"
+                                      th:text="${#strings.substring(person.peopleName,0,1).toUpperCase()
+      + (person.peopleName.contains(' ') ? #strings.substring(person.peopleName.split(' ')[1],0,1).toUpperCase() : '')}">
+</span>
+
+                            </div>
+                            <div class="cast-info">
+                                <div class="cast-name" th:text="${person.peopleName}">Actress Name</div>
+                                <div class="cast-role">Actress</div>
+                                <div class="current-rating">Current Rating:
+                                    <span  ></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <input type="hidden" name="peopleId[]" th:value="${person.pid}">
+                    <input type="hidden" th:name="'rating_' + ${person.pid}" th:id="'rating_' + ${person.pid}" value="0">
+
+                    <div class="star-rating-container" th:id="'stars_' + ${person.pid}">
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 1)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 2)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 3)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 4)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 5)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Singers -->
+            <div class="category-section" th:if="${singer != null && !singer.isEmpty()}">
+                <h2 class="category-title">Singers</h2>
+
+                <div class="cast-card" th:each="person : ${singer}">
+                    <div class="cast-header">
+                        <a th:href="@{/people2/{id} (id= ${person.pid})}">
+                            <div class="cast-photo">
+
+                                <img th:if="${person.image != null}"
+                                     th:src="@{'/profile/' + ${person.pid}}"
+                                     th:alt="${person.peopleName}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                <span class="initials"
+                                      th:text="${#strings.substring(person.peopleName,0,1).toUpperCase()
+                      + (person.peopleName.contains(' ') ? #strings.substring(person.peopleName.split(' ')[1],0,1).toUpperCase() : '')}">
+                  </span>
+                            </div>
+                            <div class="cast-info">
+                                <div class="cast-name" th:text="${person.peopleName}">Singer Name</div>
+                                <div class="cast-role">Singer</div>
+                                <div class="current-rating">
+                                    Current Rating: <span></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- ✅ MUST BE INSIDE LOOP -->
+                    <input type="hidden" name="peopleId[]" th:value="${person.pid}">
+                    <input type="hidden"
+                           th:name="'rating_' + ${person.pid}"
+                           th:id="'rating_' + ${person.pid}"
+                           value="0">
+
+                    <div class="star-rating-container" th:id="'stars_' + ${person.pid}">
+                        <div class="star-rating-container" th:id="'stars_' + ${person.pid}">
+                            <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 1)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 2)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 3)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 4)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 5)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Writers -->
+            <div class="category-section" th:if="${writer != null && !writer.isEmpty()}">
+                <h2 class="category-title">Writers</h2>
+                <div class="cast-card" th:each="person, iterStat : ${writer}">
+                    <div class="cast-header">
+                        <a th:href="@{/people2/{id} (id= ${person.pid})}">
+                            <div class="cast-photo">
+
+                                <img th:if="${person.image != null}"
+                                     th:src="@{'/profile/' + ${person.pid}}"
+                                     th:alt="${person.peopleName}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                <span class="initials"
+                                      th:text="${#strings.substring(person.peopleName,0,1).toUpperCase()
+      + (person.peopleName.contains(' ') ? #strings.substring(person.peopleName.split(' ')[1],0,1).toUpperCase() : '')}">
+</span>
+
+                            </div>
+                            <div class="cast-info">
+                                <div class="cast-name" th:text="${person.peopleName}">Writer Name</div>
+                                <div class="cast-role">Writer</div>
+                                <div class="current-rating">
+                                    Current Rating:
+                                    <span  ></span>
+                                </div>
+                            </div>
+                        </a>   </div>
+
+                    <input type="hidden" name="peopleId[]" th:value="${person.pid}">
+                    <input type="hidden" th:name="'rating_' + ${person.pid}" th:id="'rating_' + ${person.pid}" value="0">
+
+                    <div class="star-rating-container" th:id="'stars_' + ${person.pid}">
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 1)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 2)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 3)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 4)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 5)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Producers -->
+            <div class="category-section" th:if="${producer != null && !producer.isEmpty()}">
+                <h2 class="category-title">Producers</h2>
+                <div class="cast-card" th:each="person, iterStat : ${producer}">
+                    <div class="cast-header">
+                        <a th:href="@{/people2/{id} (id= ${person.pid})}">
+                            <div class="cast-photo">
+
+                                <img th:if="${person.image != null}"
+                                     th:src="@{'/profile/' + ${person.pid}}"
+                                     th:alt="${person.peopleName}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                <span class="initials"
+                                      th:text="${#strings.substring(person.peopleName,0,1).toUpperCase()
+      + (person.peopleName.contains(' ') ? #strings.substring(person.peopleName.split(' ')[1],0,1).toUpperCase() : '')}">
+</span>
+
+                            </div>
+                            <div class="cast-info">
+                                <div class="cast-name" th:text="${person.peopleName}">Producer Name</div>
+                                <div class="cast-role">Producer</div>
+                                <div class="current-rating">
+                                    Current Rating:
+                                    <span  ></span>
+                                </div>
+                            </div>
+                        </a>   </div>
+
+                    <input type="hidden" name="peopleId[]" th:value="${person.pid}">
+                    <input type="hidden" th:name="'rating_' + ${person.pid}" th:id="'rating_' + ${person.pid}" value="0">
+
+                    <div class="star-rating-container" th:id="'stars_' + ${person.pid}">
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 1)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 2)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 3)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 4)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 5)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Other Cast -->
+            <div class="category-section" th:if="${ppl != null && !ppl.isEmpty()}">
+                <h2 class="category-title">Other Cast</h2>
+                <div class="cast-card" th:each="person, iterStat : ${ppl}">
+                    <div class="cast-header">
+                        <a th:href="@{/people2/{id} (id= ${person.pid})}">
+                            <div class="cast-photo">
+
+                                <img th:if="${person.image != null}"
+                                     th:src="@{'/profile/' + ${person.pid}}"
+                                     th:alt="${person.peopleName}"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                <span class="initials"
+                                      th:text="${#strings.substring(person.peopleName,0,1).toUpperCase()
+      + (person.peopleName.contains(' ') ? #strings.substring(person.peopleName.split(' ')[1],0,1).toUpperCase() : '')}">
+</span>
+
+                            </div>
+                            <div class="cast-info">
+                                <div class="cast-name" th:text="${person.peopleName}">Cast Name</div>
+                                <div class="cast-role" th:text="${person.role}">Other Cast</div>
+                                <div class="current-rating">
+                                    Current Rating:
+                                    <span ></span>
+                                </div>
+                            </div>
+                        </a>      </div>
+
+                    <input type="hidden" name="peopleId[]" th:value="${person.pid}">
+                    <input type="hidden" th:name="'rating_' + ${person.pid}" th:id="'rating_' + ${person.pid}" value="0">
+
+                    <div class="star-rating-container" th:id="'stars_' + ${person.pid}">
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 1)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 2)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 3)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 4)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        <button type="button" class="star-btn empty" th:onclick="'setRating(' + ${person.pid} + ', 5)'"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    </div>
+                </div>
+            </div>
+            <div class="submit-section">
+                <button type="submit" class="submit-btn">Submit All Ratings</button>
+                <div class="rating-count">
+                    You've rated <span id="ratingCount">0</span> cast members
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+<script th:inline="javascript">
+    const ratings = {};
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const starContainers = document.querySelectorAll('.star-rating-container');
+
+        starContainers.forEach(function(container) {
+            const personId = container.id.replace('stars_', '');
+            const starButtons = container.querySelectorAll('.star-btn');
+
+            starButtons.forEach(function(button, index) {
+                const rating = index + 1;
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    setRating(personId, rating);
+                });
+            });
+        });
+    });
+
+    function setRating(personId, rating) {
+        ratings[personId] = rating;
+
+        const ratingInput = document.getElementById('rating_' + personId);
+        if (ratingInput) {
+            ratingInput.value = rating;
+        }
+
+        const starContainer = document.getElementById('stars_' + personId);
+        if (starContainer) {
+            const stars = starContainer.querySelectorAll('.star-btn');
+            stars.forEach(function(star, index) {
+                if (index < rating) {
+                    star.classList.remove('empty');
+                    star.classList.add('filled');
+                } else {
+                    star.classList.remove('filled');
+                    star.classList.add('empty');
+                }
+            });
+        }
+
+        updateRatingCount();
+    }
+
+    function updateRatingCount() {
+        const ratedCount = Object.keys(ratings).filter(function(key) {
+            return ratings[key] > 0;
+        }).length;
+
+        const countElement = document.getElementById('ratingCount');
+        if (countElement) {
+            countElement.textContent = ratedCount;
+        }
+    }
+
+    const form = document.getElementById('castRatingForm');
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default submission first
+
+            // Check if user is logged in - using Thymeleaf inline expression
+            let isUserNull = /*[[${session.loggedUser == null}]]*/ true;
+
+            if (isUserNull) {
+                Swal.fire({
+                    title: 'Login Required',
+                    text: "You need to login first to rate the cast!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f57420',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Login Now',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/login';
+                    }
+                });
+                return false;
+            }
+
+            // Check if at least one cast member is rated
+            const ratedCount = Object.keys(ratings).filter(function(key) {
+                return ratings[key] > 0;
+            }).length;
+
+            if (ratedCount === 0) {
+                Swal.fire({
+                    title: 'No Ratings',
+                    text: 'Please rate at least one cast member before submitting!',
+                    icon: 'info',
+                    confirmButtonColor: '#f57420'
+                });
+                return false;
+            }
+
+            // If all validations pass, submit the form
+            form.submit();
+        });
+    }
+</script>
+</body>
+</html>

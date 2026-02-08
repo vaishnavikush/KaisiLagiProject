@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Kaisi Lagi</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&family=Monoton&family=Poppins:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet">
+    <!-- ApexCharts CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.44.0/apexcharts.min.js"></script>
+
+    <style>
+        /* RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ROOT */
+        :root {
+            --sidebar-width: 250px;
+            --primary-bg: #1d000a;
+            --accent: #eb2d5d;
+            --accent-light: #ff4d7d;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-primary: #ffffff;
+        }
+
+        /* PAGE BACKGROUND */
+        html {
+            background-color: #1d000a !important;
+        }
+
+        body {
+            background-image: url("/images/bb.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            padding-top: 100px;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            color: var(--text-primary);
+        }
+
+        /* ANIMATED BACKGROUND PARTICLES */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.6; }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-30px) translateX(30px); }
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(235, 45, 93, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(235, 45, 93, 0.8);
+        }
+
+        .particle:nth-child(1) { top: 20%; left: 10%; animation: float 6s infinite ease-in-out; }
+        .particle:nth-child(2) { top: 60%; left: 80%; animation: float 8s infinite ease-in-out 1s; }
+        .particle:nth-child(3) { top: 40%; left: 50%; animation: float2 7s infinite ease-in-out 2s; }
+        .particle:nth-child(4) { top: 80%; left: 30%; animation: float 9s infinite ease-in-out 3s; }
+        .particle:nth-child(5) { top: 10%; left: 70%; animation: float2 6s infinite ease-in-out 1.5s; }
+
+        /* LAYOUT */
+        .container-fluid {
+            background-color: transparent !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .layout {
+            display: flex;
+            gap: 20px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================= */
+        /* PREMIUM BLUR GLASS SIDEBAR */
+        /* ============================= */
+
+        .sidebar {
+            color: #ffffff;
+            width: 250px;
+            margin-top: 10px;
+            background: linear-gradient(145deg, rgba(102, 145, 160, 0.4), rgba(125, 1, 34, 0.522));
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--sidebar-border);
+            padding: 20px;
+            height: calc(100vh - 100px);
+            border-radius: 12px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+            position: sticky;
+            top: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar nav a i {
+            margin-right: 8px;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(250, 234, 238, 0.3);
+            color: #fff;
+            text-shadow: 0 0 8px #ff0080;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 18px;
+            background-color: transparent;
+        }
+
+        /* PROFILE IMAGE with animation */
+        .profile-wrapper {
+            position: relative;
+            display: inline-block;
+            animation: bounceIn 1s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .sidebar .rounded-circle {
+            border: 2px solid var(--accent);
+            padding: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(245, 103, 138, 0.6);
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .rounded-circle:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(235, 45, 93, 1);
+        }
+
+        .sidebar h6 {
+            color: #ffffff !important;
+            text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 2px 15px rgba(235, 45, 93, 0.8); }
+            50% { text-shadow: 0 2px 25px rgba(235, 45, 93, 1); }
+        }
+
+
+        /* ============================= */
+        /* ULTRA BLUR GLASS CARDS */
+        /* ============================= */
+        .card {
+            /* Premium blur glass */
+            background: linear-gradient(
+                135deg,
+                rgba(85, 85, 85, 0.355),
+                rgba(0, 0, 0, 0.315)
+            ) !important;
+
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 24px;
+
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+            color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Animated gradient background */
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle,
+                rgba(235, 45, 93, 0.15) 0%,
+                transparent 70%
+            );
+            animation: rotate 8s linear infinite;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Sparkle effect */
+        .card::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(35, 35, 35, 0.1) 50%,
+                transparent 70%
+            );
+            transform: rotate(45deg);
+            animation: shine 3s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .card:hover {
+            transform: translateY(-12px) scale(1.03);
+            border-color: rgba(235, 45, 93, 0.5) !important;
+            box-shadow:
+                0 20px 60px rgba(235, 45, 93, 0.5),
+                0 0 0 2px rgba(235, 45, 93, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        /* Staggered animation for cards */
+        .card:nth-child(1) { animation: fadeInUp 0.6s ease-out 0.1s both; }
+        .card:nth-child(2) { animation: fadeInUp 0.6s ease-out 0.2s both; }
+        .card:nth-child(3) { animation: fadeInUp 0.6s ease-out 0.3s both; }
+
+        /* Enhanced text on cards */
+        .card h6,
+        .card h5,
+        .card h3 {
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        .card small {
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* CHART BOX */
+
+        /* STATS with animation */
+        .stats-number {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 4px 15px rgba(235, 45, 93, 0.6);
+            animation: countUp 1s ease-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ENHANCED COLORS with glow */
+        .text-primary {
+            color: #6ec1e4 !important;
+            text-shadow: 0 2px 10px rgba(110, 193, 228, 0.6);
+            animation: colorGlow 2s ease-in-out infinite;
+        }
+
+        .text-success {
+            color: #52c41a !important;
+            text-shadow: 0 2px 10px rgba(82, 196, 26, 0.6);
+        }
+
+        .text-warning {
+            color: #ffc107 !important;
+            text-shadow: 0 2px 10px rgba(255, 193, 7, 0.6);
+            animation: colorGlow 2s ease-in-out infinite 0.5s;
+        }
+
+        .text-danger {
+            color: #ff4d4f !important;
+            text-shadow: 0 2px 10px rgba(255, 77, 79, 0.6);
+        }
+
+        @keyframes colorGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        /* HEADINGS */
+        .text-light {
+            color: #ffffff !important;
+            text-shadow: 0 4px 20px rgba(235, 45, 93, 0.8);
+            animation: titleSlide 1s ease-out;
+        }
+
+        @keyframes titleSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Sidebar */
+        @media (max-width: 991px) {
+            .sidebar {
+                position: fixed;
+                top: 120px;
+                left: 0;
+                width: 200px;
+                height: calc(100vh - 140px);
+                background: linear-gradient(145deg, #7917307b, rgba(106, 11, 36, 0.314));
+                backdrop-filter: blur(10px);
+                z-index: 9999;
+                transform: translateX(-200px);
+                transition: transform 0.35s ease;
+                border-radius: 0 14px 14px 0;
+                box-shadow: 6px 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            /* Thin visible strip */
+            .sidebar::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                right: -10px;
+                width: 10px;
+                height: 100%;
+                background: linear-gradient(145deg, #79172f, rgba(106, 11, 36, 0.95));
+                border-radius: 0 10px 10px 0;
+                cursor: pointer;
+            }
+
+            /* Open on hover/touch */
+            .sidebar:hover,
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .layout {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+        }
+
+        .chart-box {
+            min-height: 300px;
+            background: linear-gradient(145deg, rgba(102, 145, 160, 0.3), rgba(125, 1, 34, 0.4));
+            backdrop-filter: blur(10px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .sidebar {
+                top: 90px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .sidebar {
+                top: 90px;
+            }
+
+            .stats-number {
+                font-size: 2.2rem;
+            }
+
+            .card {
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-number {
+                font-size: 1.8rem;
+            }
+
+            .card h6 {
+                font-size: 0.9rem;
+            }
+
+            .sidebar nav a {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- Animated Background Particles -->
+<div class="bg-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+</div>
+
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: nav(activePage='dashboard')}"></div>
+
+<!-- LAYOUT -->
+<div class="container-fluid">
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar mb-3">
+            <div class="text-center mb-4" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <a th:href="@{/profile}">
+                    <img th:src="${photo != null} ? 'data:image/jpeg;base64,' + ${photo} : @{/images/default.png}"
+                         alt="Profile Picture" width="50" height="50" class="rounded-circle" />
+                </a>
+                <h6 style="font-family: 'Poppins', sans-serif; color: #ffffff; margin-top: 0;" th:text="${username}">Admin</h6>
+                <!-- <h5 style="font-family: 'Cookie', cursive; color: #ffffff; margin-top: 5px;">Kaisi Lagi</h5> -->
+            </div>
+
+            <nav>
+                <a class="active" th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a  th:href="@{/moviedelete}" th:classappend="${activePage == 'Allmovies'} ? 'active' : ''">
+                    <i class="bi bi-camera-reels-fill"></i> All Movies
+                </a>
+                </a>
+                <a th:href="@{/showpeople}" th:classappend="${activePage == 'showpeople'} ? 'active' : ''">
+                    <i class="bi bi-people-fill"></i> All Crew
+                </a>
+                <a th:href="@{/users}" th:classappend="${activePage == 'makeAdmin'} ? 'active' : ''">
+                    <i class="bi bi-person-workspace"></i> Create Admin
+                </a>
+                <a th:href="@{/block-users}" th:classappend="${activePage == 'blockUser'} ? 'active' : ''">
+                    <i class="bi bi-person-fill-gear"></i> All Users
+                </a>
+                <a th:href="@{/ShowReports}" th:classappend="${activePage == 'AdminReportMasterForm'} ? 'active' : ''">
+                    <i class="bi bi-bar-chart-fill"></i> All Reports
+                </a>
+                <a th:href="@{/list}" th:classappend="${activePage == 'badgelist'} ? 'active' : ''">
+                    <i class="bi bi-award-fill"></i>Badges
+                </a>
+                <a th:href="@{/logout}">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </nav>
+            <div class="sidebar-strip"></div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <div class="text-center mb-4">
+                <h1 class="text-light"
+                    style="font-family: 'Monoton', cursive; word-spacing: 15px; letter-spacing: 5px;">ADMIN
+                    DASHBOARD</h1>
+                <h4 style="font-family: 'Cookie', cursive; font-size: 1.8rem;color: #fff;">Real time snapshot of platform prformance and activity</h4>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="row g-3 g-md-4 text-light">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card p-4 text-center">
+                        <h6>Total Entries</h6>
+                        <h3 class="stats-number" th:text="${totalEntries}">0</h3>
+                        <div class="d-flex justify-content-around mt-3 flex-wrap gap-2">
+                            <small class="text-primary fw-bold">Movies: <span
+                                    th:text="${movieCount}">0</span></small>
+                            <small class="text-success fw-bold">Webseries: <span
+                                    th:text="${webseriesCount}">0</span></small>
+                            <small class="text-warning fw-bold">Serial: <span
+                                    th:text="${serialCount}">0</span></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card p-4 text-center">
+                        <h6>Total Users</h6>
+                        <h3 class="stats-number" th:text="${totalUsers}">0</h3>
+                        <div class="d-flex justify-content-around mt-3 flex-wrap gap-2">
+                            <small class="text-success fw-bold">Active: <span
+                                    th:text="${activeUsers}">0</span></small>
+                            <small class="text-danger fw-bold">Inactive: <span
+                                    th:text="${inactiveUsers}">0</span></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-12 col-lg-4">
+                    <div class="card p-4 text-center">
+                        <h6>Total Reviews</h6>
+                        <h3 class="stats-number text-warning" th:text="${totalReviews}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Content Row -->
+            <div class="row g-3 g-md-4 mt-2">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card p-4 text-center">
+                        <h6>Top Movie</h6>
+                        <h5 class="fw-bold" th:text="${topMovie != null ? topMovie.name : 'N/A'}">N/A</h5>
+                        <div class="text-warning">★ <span
+                                th:text="${topMovie != null ? topMovie.rating : '0.0'}">0.0</span></div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card p-4 text-center">
+                        <h6>Top Webseries</h6>
+                        <h5 class="fw-bold" th:text="${topWeb != null ? topWeb.name : 'N/A'}">N/A</h5>
+                        <div class="text-warning">★ <span
+                                th:text="${topWeb != null ? topWeb.rating : '0.0'}">0.0</span></div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-12 col-lg-4">
+                    <div class="card p-4 text-center">
+                        <h6>Top Serial</h6>
+                        <h5 class="fw-bold" th:text="${topSerial != null ? topSerial.name : 'N/A'}">N/A</h5>
+                        <div class="text-warning">★ <span
+                                th:text="${topSerial != null ? topSerial.rating : '0.0'}">0.0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-3 g-md-4 mt-2 bg-light p-3 rounded-4">
+                <div class="col-12 col-lg-6">
+                    <div class="card p-4 chart-box">
+                        <h6 class="text-center mb-3">Daily Reviews</h6>
+                        <div id="dailyReviewsChart"></div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 bg-light">
+                    <div class="card p-4 chart-box">
+                        <h6 class="text-center mb-3">New Users Per Month</h6>
+                        <div id="monthlyUsersChart"></div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Charts and Sidebar Script -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Chart Initialization
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            var dailyLabels = /*[[${dailyLabels != null ? dailyLabels : '[]'}]]*/[];
+            var dailyCounts = /*[[${dailyCounts != null ? dailyCounts : '[]'}]]*/[];
+            var monthlyLabels = /*[[${monthlyLabels != null ? monthlyLabels : '[]'}]]*/[];
+            var monthlyCounts = /*[[${monthlyCounts != null ? monthlyCounts : '[]'}]]*/[];
+
+            console.log('Chart Data:', { dailyLabels, dailyCounts, monthlyLabels, monthlyCounts });
+
+            // Daily Reviews Chart
+            var dailyChart = new ApexCharts(document.querySelector("#dailyReviewsChart"), {
+                chart: {
+                    type: 'line',
+                    height: 260,
+                    toolbar: { show: false }
+                },
+                series: [{ name: 'Daily Reviews', data: dailyCounts }],
+                xaxis: {
+                    categories: dailyLabels,
+                    labels: { style: { colors: '#333' } }
+                },
+                yaxis: {
+                    labels: { style: { colors: '#333' } }
+                },
+                stroke: { curve: 'smooth', width: 3 },
+                colors: ['#eb2d5d'],
+                tooltip: { theme: 'light' },
+                grid: { borderColor: '#e0e0e0' }
+            });
+            dailyChart.render();
+
+            // Monthly Users Chart
+            var monthlyChart = new ApexCharts(document.querySelector("#monthlyUsersChart"), {
+                chart: {
+                    type: 'bar',
+                    height: 260,
+                    toolbar: { show: false }
+                },
+                series: [{ name: 'New Users', data: monthlyCounts }],
+                xaxis: {
+                    categories: monthlyLabels,
+                    labels: { style: { colors: '#333' } }
+                },
+                yaxis: {
+                    labels: { style: { colors: '#333' } }
+                },
+                colors: ['#6a0b24'],
+                plotOptions: {
+                    bar: {
+                        borderRadius: 8,
+                        columnWidth: '60%'
+                    }
+                },
+                tooltip: { theme: 'light' },
+                grid: { borderColor: '#e0e0e0' }
+            });
+            monthlyChart.render();
+        } catch (e) {
+            console.error('Charts initialization error:', e);
+        }
+
+        // Mobile Sidebar Functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarStrip = document.querySelector('.sidebar-strip');
+
+        function isMobile() {
+            return window.innerWidth < 992;
+        }
+
+        // Toggle on strip click
+        if (sidebarStrip) {
+            sidebarStrip.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        // Close when touching outside
+        document.addEventListener('touchstart', function (e) {
+            if (!isMobile()) return;
+            if (!sidebar.contains(e.target) && e.target !== sidebarStrip) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Reset when back to desktop
+        window.addEventListener('resize', function () {
+            if (!isMobile()) {
+                sidebar.classList.remove('open');
+            }
+        });
+    });
+    /*]]>*/
+</script>
+
+</body>
+
+</html>
