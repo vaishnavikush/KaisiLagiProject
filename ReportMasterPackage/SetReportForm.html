@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--  <meta name="_csrf" th:content="${_csrf.token}">-->
+    <!--  <meta name="_csrf_header" th:content="${_csrf.headerName}">-->
+
+    <title>Report Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f7a6a6, #ecff7f);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        form {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ff6b35;
+            margin-bottom: 8px;
+        }
+
+        #report {
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background-color: #f7fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            border-color: #ff6b35;
+            background-color: white;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #ff6b35;
+        }
+
+        .radio-option label {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 400;
+            color: #2d3748;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .radio-option:has(input[type="radio"]:checked) {
+            border-color: #ff6b35;
+            background-color: #fff5f2;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            margin-top: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        input[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+        }
+
+        input[type="submit"]:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            form {
+                padding: 30px 24px;
+            }
+
+            label {
+                font-size: 16px;
+            }
+
+            .radio-option {
+                padding: 12px;
+            }
+
+            .radio-option label {
+                font-size: 14px;
+            }
+
+            input[type="submit"] {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<form method="post" action="/reportset" id="reportForm">
+
+    <!-- REQUIRED hidden fields -->
+    <!--  <input type="hidden" name="ownerId" th:value="${owner.id}">-->
+    <!--  <input type="hidden" name="reporterId" th:value="${session.loggedUser.id}">-->
+    <!--  <input type="hidden" name="ownerId" th:value="${ownerId}">-->
+    <!--  <input type="hidden" name="reporterId" th:value="${reporterId}">-->
+    <!--  v-->
+    <!--  <input type="hidden" name="ownerId" id="ownerId">-->
+    <!--  <input type="hidden" name="reporterId" id="reporterId">-->
+    <!-- ID of the comment being reported -->
+    <!--  <input type="hidden" name="reviewId" value="${comment.id}">-->
+
+    <!--  &lt;!&ndash; ID of the user who is reporting &ndash;&gt;-->
+    <!--  <input type="hidden" name="reporterId" value="${reporter.id}">-->
+
+    <!-- Reason is selected via radio buttons as you already have -->
+
+    <!--  <input type="hidden" name="reviewId" th:value="${comment.id}">-->
+    <!--  <input type="hidden" name="reporterId" th:value="${reporter.id}">-->
+
+
+
+    <label>Report Reason</label>
+    <p id="report">Select a reason</p>
+
+    <div class="radio-group">
+        <div class="radio-option">
+            <input type="radio" name="reason" id="reason1" value="Hate Speech or Offensive Language" checked>
+            <label for="reason1">Hate Speech or Offensive Language</label>
+        </div>
+
+        <div class="radio-option">
+            <input type="radio" name="reason" id="reason2" value="Harassment or Bullying">
+            <label for="reason2">Harassment or Bullying</label>
+        </div>
+
+        <div class="radio-option">
+            <input type="radio" name="reason" id="reason3" value="Contains Spoilers Without Warning">
+            <label for="reason3">Contains Spoilers Without Warning</label>
+        </div>
+
+        <div class="radio-option">
+            <input type="radio" name="reason" id="reason4" value="Irrelevant to the Movie">
+            <label for="reason4">Irrelevant to the Movie</label>
+        </div>
+
+        <div class="radio-option">
+            <input type="radio" name="reason" id="reason5" value="False or Misleading Information">
+            <label for="reason5">False or Misleading Information</label>
+        </div>
+    </div>
+
+
+    <!--  <input type="hidden" th:name="${_csrf.parameterName}"-->
+    <!--         th:value="${_csrf.token}">-->
+
+    <!--  &lt;!&ndash; REQUIRED hidden fields &ndash;&gt;-->
+    <!--  <input type="hidden" name="ownerId" th:value="${owner.id}">-->
+    <!--  <input type="hidden" name="reporterId" th:value="${session.loggedUser.id}">-->
+
+    <input type="submit" value="Report">
+</form>
+
+<script>
+    document.getElementById('reportForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch('/reportset', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Report Submitted!',
+                    text: 'Your report has been successfully submitted.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#667eea'
+                }).then(() => {
+                    document.getElementById('reportForm').reset();
+                });
+            } else {
+                throw new Error('Failed to submit report');
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong. Please try again.',
+                confirmButtonColor: '#667eea'
+            });
+        });
+    });
+</script>
+
+<!--<script>-->
+<!--  document.getElementById('reportForm').addEventListener('submit', function(e) {-->
+<!--      e.preventDefault();-->
+
+<!--      const formData = new FormData(this);-->
+
+<!--      const csrfToken = document.querySelector('meta[name="_csrf"]').content;-->
+<!--      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;-->
+
+<!--      fetch('/reportset', {-->
+<!--          method: 'POST',-->
+<!--          headers: {-->
+<!--              [csrfHeader]: csrfToken-->
+<!--          },-->
+<!--          body: formData-->
+<!--      })-->
+<!--      .then(response => {-->
+<!--          if (response.ok) {-->
+<!--              Swal.fire({-->
+<!--                  icon: 'success',-->
+<!--                  title: 'Report Submitted!',-->
+<!--                  text: 'Your report has been successfully submitted.',-->
+<!--              }).then(() => {-->
+<!--                  window.location.href = '/movieDetailPage';-->
+<!--              });-->
+<!--          } else {-->
+<!--              throw new Error('Failed');-->
+<!--          }-->
+<!--      })-->
+<!--      .catch(() => {-->
+<!--          Swal.fire({-->
+<!--              icon: 'error',-->
+<!--              title: 'Oops...',-->
+<!--              text: 'Something went wrong. Please try again.'-->
+<!--          });-->
+<!--      });-->
+<!--  });-->
+</script>
+
+<!--<script>-->
+<!--  // Example: get IDs from URL like ?ownerId=5&reporterId=2-->
+<!--  const params = new URLSearchParams(window.location.search);-->
+
+<!--  document.getElementById("ownerId").value = params.get("ownerId");-->
+<!--  document.getElementById("reporterId").value = params.get("reporterId");-->
+<!--</script>-->
+
+
+</body>
+</html>
