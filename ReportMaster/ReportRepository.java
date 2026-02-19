@@ -27,4 +27,8 @@ public interface ReportRepository extends JpaRepository<ReportMaster,Long> {
     //this month and last month count---
     long countByReportDateBetween(LocalDate start, LocalDate end);
 
+    Long countByReview(ReviewMaster review);
+
+
+
 }
