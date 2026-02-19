@@ -61,12 +61,14 @@ public class ReportController {
                     .body(Map.of("message", "Already reported"));
         }
 
+//        Long c = ;
         ReportMaster reportMaster = new ReportMaster();
         reportMaster.setReason(reason);
         reportMaster.setReporter(reporter);
         reportMaster.setReview(reviewMaster);
         reportMaster.setOwner(reviewMaster.getUser());
         reportMaster.setReport_date(LocalDate.now());
+//        long countreport=reportMaster.setCount(currentUser.ge);
 
         reportRepository.save(reportMaster);
 
