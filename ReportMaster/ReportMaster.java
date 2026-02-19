@@ -35,9 +35,21 @@ public class ReportMaster {
     @ManyToOne
     @JoinColumn(name = "review_id")
     private ReviewMaster review;
+
+
+    Long count;
+
     @OneToMany(mappedBy = "reportMaster",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<AdminReportMaster>reportMasterList;
 
+
+    public Long getCount() {
+        return count;
+    }
+
+    public void setCount(Long count) {
+        this.count = count;
+    }
 
     public Long getReport_id() {
         return report_id;
