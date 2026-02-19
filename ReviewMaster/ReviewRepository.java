@@ -149,4 +149,37 @@ public interface ReviewRepository extends JpaRepository<ReviewMaster, Long> {
         ORDER BY r.reviewDate DESC
     """)
     List<ReviewMaster> findPeopleReviews(@Param("pid") Long pid);
+    @Query("""
+SELECT r FROM ReviewMaster r
+WHERE r.movie = :movie
+AND r.people IS NULL
+""")
+    List<ReviewMaster> findMovieReviewsOnly(@Param("movie") MovieMaster movie);
+    @Query("""
+SELECT r FROM ReviewMaster r
+WHERE r.user = :user
+AND r.movie = :movie
+AND r.people IS NULL
+""")
+//    Optional<ReviewMaster> findUserMovieReview(
+//            @Param("user") UserMaster user,
+//            @Param("movie") MovieMaster movie
+//    );
+
+//    Optional<ReviewMaster> findUserMovieReviewByObjects(
+//            @Param("user") UserMaster user,
+//            @Param("movie") MovieMaster movie
+//    );
+
+    List<ReviewMaster> findUserMovieReviewByObjects(
+            @Param("user") UserMaster user,
+            @Param("movie") MovieMaster movie
+    );
+
+
+//    public interface ReviewRepository extends JpaRepository<ReviewMaster, Long> {
+
+    @Query("SELECT AVG(r.rating) FROM ReviewMaster r WHERE r.movie.movieId = :movieId")
+    Double getAverageRatingByMovieId(@Param("movieId") Long movieId);
+
 }
