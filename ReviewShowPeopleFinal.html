@@ -303,12 +303,13 @@
     .winner-card:nth-child(3) {
       order: initial;
       transform: none !important;
-      max-width: 100%;
-      margin: 0 auto 20px;
+      max-width: 85%;
+      margin: 0 auto 15px;
+      padding: 22px 18px;
     }
 
     .winner-card:hover {
-      transform: translateY(-8px) scale(1.02) !important;
+      transform: translateY(-6px) scale(1.01) !important;
     }
 
     .leaderboard-title {
@@ -415,7 +416,7 @@
     font-weight: 500;
     text-align: center;
     white-space: normal;
-    word-break: break-all;
+    word-break: break-word;
     overflow-wrap: anywhere;
   }
 
@@ -617,8 +618,8 @@
     }
 
     .winner-card {
-      max-width: 100%;
-      padding: 28px 24px;
+      max-width: 80%;
+      padding: 22px 18px;
     }
 
     .rank-row {
@@ -648,6 +649,54 @@
 
     .rest-section {
       padding: 20px 15px;
+    }
+
+    /* Smaller winner card elements on tablet */
+    .winner-avatar {
+      width: 100px;
+      height: 100px;
+    }
+
+    .winner-card:nth-child(1) .winner-avatar {
+      width: 115px;
+      height: 115px;
+    }
+
+    .winner-name {
+      font-size: 1.05rem;
+      margin-top: 10px;
+    }
+
+    .winner-card:nth-child(1) .winner-name {
+      font-size: 1.2rem;
+    }
+
+    .winner-role {
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .winner-stars {
+      font-size: 1.1rem;
+      margin-top: 8px;
+      letter-spacing: 2px;
+    }
+
+    .winner-rating {
+      font-size: 1rem;
+      margin-top: 6px;
+    }
+
+    .position-number {
+      width: 44px;
+      height: 44px;
+      font-size: 1.3rem;
+      top: -18px;
+    }
+
+    .medal-badge {
+      font-size: 2rem !important;
+      margin: 8px 0 !important;
     }
   }
 
@@ -681,30 +730,58 @@
       font-size: 1.1rem;
     }
 
+    /* Much smaller winner cards on mobile */
+    .winner-card {
+      max-width: 90%;
+      padding: 18px 15px;
+      margin: 0 auto 12px;
+    }
+
     .winner-avatar {
-      width: 120px;
-      height: 120px;
+      width: 85px;
+      height: 85px;
     }
 
     .winner-card:nth-child(1) .winner-avatar {
-      width: 140px;
-      height: 140px;
-    }
-
-    .winner-card {
-      padding: 24px 20px;
+      width: 100px;
+      height: 100px;
     }
 
     .winner-name {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
+      margin-top: 8px;
     }
 
     .winner-card:nth-child(1) .winner-name {
-      font-size: 1.25rem;
+      font-size: 1.1rem;
     }
 
     .winner-role {
-      font-size: 0.85rem;
+      font-size: 0.78rem;
+      margin-top: 3px;
+    }
+
+    .winner-stars {
+      font-size: 1rem;
+      margin-top: 6px;
+      letter-spacing: 1.5px;
+    }
+
+    .winner-rating {
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    .position-number {
+      width: 38px;
+      height: 38px;
+      font-size: 1.1rem;
+      top: -16px;
+    }
+
+    .medal-badge {
+      font-size: 1.8rem !important;
+      margin: 6px 0 !important;
     }
 
     .profile-img {
@@ -746,6 +823,57 @@
     .sort-select {
       font-size: 0.9rem;
       padding: 10px 40px 10px 18px;
+    }
+  }
+
+  /* Extra small screens */
+  @media (max-width: 400px) {
+    .winner-card {
+      max-width: 95%;
+      padding: 16px 12px;
+    }
+
+    .winner-avatar {
+      width: 75px;
+      height: 75px;
+    }
+
+    .winner-card:nth-child(1) .winner-avatar {
+      width: 90px;
+      height: 90px;
+    }
+
+    .winner-name {
+      font-size: 0.88rem;
+    }
+
+    .winner-card:nth-child(1) .winner-name {
+      font-size: 1rem;
+    }
+
+    .winner-role {
+      font-size: 0.72rem;
+    }
+
+    .winner-stars {
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
+    .winner-rating {
+      font-size: 0.85rem;
+    }
+
+    .position-number {
+      width: 35px;
+      height: 35px;
+      font-size: 1rem;
+      top: -15px;
+    }
+
+    .medal-badge {
+      font-size: 1.5rem !important;
+      margin: 5px 0 !important;
     }
   }
 
@@ -946,6 +1074,239 @@
     z-index: 20;
   }
 
+
+
+
+    /* ====FOOTER==== */
+    .footer {
+      font-family: Poppins, sans-serif;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(44, 31, 46, 0.95) 100%) !important;
+      border-top: 3px solid #F5A623;
+      box-shadow: 0 -2px 10px rgba(245, 166, 35, 0.3);
+      padding: 2rem 0;
+      margin-top: auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%);
+    }
+
+    /* Main Footer Container */
+    .footer-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Left Side - Logo */
+    .footer-left {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .footer .xits-img {
+      width: 150px;
+      height: 100px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.1));
+      transition: transform 0.3s ease;
+    }
+
+    .footer .xits-img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Right Side - Content */
+    .footer-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      text-align: end;
+    }
+
+    .footer p {
+      color: #64748B;
+      font-size: 0.95rem;
+      font-family: 'Inter', 'Poppins', sans-serif;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: end;
+      text-align: end;
+      justify-content: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: #94A3B8;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      position: relative;
+      font-family: 'Poppins', sans-serif;
+      white-space: nowrap;
+      text-align: end;
+    }
+
+    .footer-links a:hover {
+      color: #F5A623;
+      transform: translateY(-2px);
+    }
+
+    .footer-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background-color: #F5A623;
+      transition: width 0.3s ease;
+    }
+
+    .footer-links a:hover::after {
+      width: 100%;
+    }
+
+    .copyright {
+      color: #64748B;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .footer {
+        padding: 1.75rem 0;
+      }
+
+      .footer-container {
+        gap: 2rem;
+      }
+
+      .footer .xits-img {
+        width: 85px;
+        height: 70px;
+      }
+
+      .footer p {
+        font-size: 0.9rem;
+      }
+
+      .footer-links {
+        gap: 1.5rem;
+      }
+
+      .footer-links a {
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .footer {
+        padding: 1.5rem 0;
+      }
+
+      .footer-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+      }
+
+      .footer-left {
+        justify-content: center;
+      }
+
+      .footer .xits-img {
+        width: 75px;
+        height: 62px;
+      }
+
+      .footer-right {
+        align-items: center;
+      }
+
+      .footer-links {
+        justify-content: center;
+        gap: 1.5rem;
+      }
+
+      .footer p {
+        font-size: 0.88rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .footer {
+        padding: 1.25rem 0;
+      }
+
+      .footer-container {
+        gap: 1rem;
+      }
+
+      .footer .xits-img {
+        width: 65px;
+        height: 54px;
+      }
+
+      .footer-links {
+        gap: 1rem;
+      }
+
+      .footer-links a {
+        font-size: 0.8rem;
+      }
+
+      .footer p {
+        font-size: 0.82rem;
+      }
+
+      .copyright {
+        font-size: 0.78rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .footer .xits-img {
+        width: 55px;
+        height: 46px;
+      }
+
+      .footer-links {
+        gap: 0.75rem;
+      }
+
+      .footer-links a {
+        font-size: 0.75rem;
+      }
+
+      .footer p {
+        font-size: 0.78rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1187,5 +1548,31 @@
   }
 </script>
 
+
+<footer class="footer">
+  <div class="container-fluid px-3 px-md-4">
+    <div class="footer-container">
+      <!-- Left Side - Logo -->
+      <div class="footer-left">
+        <img th:src="@{/images/XITS Logo.png}" th:href="@{https://www.xansa.net/}"
+             class="xits-img" alt="xits" style="cursor: pointer;" onclick="window.open('https://www.xansa.net/', '_blank')">
+      </div>
+
+      <!-- Right Side - Content -->
+      <div class="footer-right">
+        <p>Your ultimate destination for movie ratings and reviews</p>
+
+        <div class="footer-links">
+          <a href="#" th:href="@{/about}">About</a>
+          <a href="#" th:href="@{/privacy}">Privacy</a>
+          <a href="#" th:href="@{/terms}">Terms</a>
+          <a href="#" th:href="@{/contact}">Contact</a>
+        </div>
+
+        <p class="copyright">© 2025 Kaisi Lagi. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</footer>
 </body>
 </html>
