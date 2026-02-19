@@ -53,6 +53,13 @@ public class AdminReportMasterController {
         List<ReportMaster>reportList=reportRepository.findAll();
         List<ReviewMaster>reviewList=reviewRepository.findAll();
         List<UserMaster>userList=userRepository.findAll();
+
+        // Set report count for each review
+        for (ReviewMaster review : reviewList) {
+            Long count = reportRepository.countByReview(review);
+            review.setReportCount(count);
+        }
+
         model.addAttribute("reportMaster",reportMaster);
         model.addAttribute("reviewMaster",reviewMaster);
         model.addAttribute("userMaster",userMaster);
@@ -61,7 +68,10 @@ public class AdminReportMasterController {
         model.addAttribute("userList",userList);
         model.addAttribute("activePage", "AdminReportMasterForm");
 
-        // This Month
+
+
+
+            // This Month
         LocalDate today=LocalDate.now();
         LocalDate thismonthstart=today.withDayOfMonth(1);
         LocalDate thismonthend=today.withDayOfMonth(today.lengthOfMonth());
@@ -179,9 +189,11 @@ public class AdminReportMasterController {
         //----------------same review-----------
         ReviewMaster reviewMaster=reports.getReview();
         List<ReportMaster>allreport=reportRepository.findAllByReview(reviewMaster);
+
         //----------------loop-----------------
         for(ReportMaster reportMaster:allreport) {
             UserMaster reporter = reportMaster.getReporter();
+            int count=(int) allreport.size();
             if(reporter==null){
                 return "redirect:/login";
             }
