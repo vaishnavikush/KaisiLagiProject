@@ -15,6 +15,18 @@ import java.util.List;
 @Entity
 @Table(name = "review_master")
 public class ReviewMaster {
+
+    @Transient
+    private Long reportCount;
+
+    public Long getReportCount() {
+        return reportCount;
+    }
+
+    public void setReportCount(Long reportCount) {
+        this.reportCount = reportCount;
+    }
+
     public Long getReviewId() {
         return reviewId;
     }
@@ -104,6 +116,16 @@ public class ReviewMaster {
 
     public void setReplies(List<ReplyMaster> replies) {
         this.replies = replies;
+    }
+
+    @Transient
+    public boolean isMovieReview() {
+        return movie != null;
+    }
+
+    @Transient
+    public boolean isPeopleReview() {
+        return people != null;
     }
 
 
