@@ -118,7 +118,7 @@ public class ReviewController {
             case "movies":
             case "webseries":
             case "serial":
-                String category = tab.equals("movies") ? "movie" : tab.equals("webseries") ? "web series" : "serial";
+                String category = tab.equals("movies") ? "movie" : tab.equals("webseries") ? "web series" : "tv show";
                 List<MovieMaster> movieTabList = groupedByCategory.getOrDefault(category, new ArrayList<>());
                 sortMovies(movieTabList, movieAvgRatings, movieVotes, sort);
                 model.addAttribute("movieshow", movieTabList);
